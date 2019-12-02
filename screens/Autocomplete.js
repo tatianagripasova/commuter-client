@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, TextInput, ScrollView, TouchableWithoutFeedback, Keyboard }  from "react-native";
+import { View, StyleSheet, Text, ScrollView, TouchableWithoutFeedback, Keyboard }  from "react-native";
 import Modal from "react-native-modal";
+import Input from "../components/Input";
 
 const Autocomplete = props => {
     const [textValue, setTextValue] = useState("");
@@ -26,7 +27,7 @@ const Autocomplete = props => {
             <View style={styles.container}>
                 <ScrollView>
                     <View style={styles.inputContainer}>
-                        <TextInput
+                        <Input
                             style={styles.input}
                             value={textValue}
                             onChangeText={onTextChange}
@@ -83,15 +84,6 @@ const styles = StyleSheet.create({
     }, 
     inputContainer: {
         flex: 1
-    },
-    input: {
-        alignItems: "center",
-        marginTop: 30,
-        marginBottom: 30,
-        width: "100%",
-        height: 40, 
-        borderColor: "#B9B5B5",
-        borderWidth: 1 
     }, 
     dividerTitle: {
         padding: 20

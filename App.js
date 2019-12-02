@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Autocomplete  from "./components/Autocomplete";
+import Autocomplete  from "./screens/Autocomplete";
+import Picker from "./screens/Picker";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
 
 const defaultOptions = [
@@ -10,18 +11,21 @@ const defaultOptions = [
 
 export default function App() {
   const [autoOptions, setAutoOptions] = useState([]);
-  const [autocomplete, setAutocomplete] = useState(true);
+  const [address, setAddress] = useState({});
+  const [autocomplete, setAutocomplete] = useState(false);
+  const [picker, setPicker] = useState(true);
   const [region, setRegion] = useState(defaultRegion);
   const [permission, setPermission] = useState(false);
 
   useEffect(() => {
     getLocation();
-  }, [])
+  }, []);
 
   const getLocation = async () => {
     const { region, status } = await getLocationAsync();
     setRegion(region);
     setPermission(status);
+    await getAddressByLocation(region);
   };
 
   const inputHandler = async (text) => {
@@ -42,13 +46,28 @@ export default function App() {
     }
   };
 
+  const getAddressByLocation = async(region) => {
+    const result = await fetch("http://localhost:3000/location", {
+      method: "POST", 
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        location: region
+      })
+    })
+    const data = await result.json();
+    setAddress(data);
+    console.log(data);
+  };
+
   const selectHandler = async(value) => {
     console.log(value);
   };
 
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
       <Autocomplete 
         visible={autocomplete}
         autocompleteOptions={autoOptions}
@@ -57,9 +76,13 @@ export default function App() {
         onInputChange={inputHandler}
         onSelect={selectHandler}
       />
+      <Picker
+        visible={picker}
+        location={address}
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
