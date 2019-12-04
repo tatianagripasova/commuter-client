@@ -66,6 +66,8 @@ export default function App() {
     console.log(value);
   };
 
+  const onCreateEvent = console.log;
+
   return (
     <View style={styles.container}>
       <Autocomplete 
@@ -79,6 +81,9 @@ export default function App() {
       <Picker
         visible={picker}
         location={address}
+        region={region}
+        onCreateEvent={onCreateEvent}
+        autocompleteInputHandler={inputHandler}
       />
     </View>
   );
@@ -89,6 +94,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center", 
+    fontFamily: "System",
+    fontSize: 18
   }
 });

@@ -7,6 +7,7 @@ const Autocomplete = props => {
     const [textValue, setTextValue] = useState("");
 
     const onValueSelect = (value) => {
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
         props.onSelect(value);
         
     };
@@ -40,9 +41,11 @@ const Autocomplete = props => {
                                     <TouchableWithoutFeedback
                                         onPress={() => onValueSelect(autoOption)}
                                     >
-                                        <Text>
-                                            {autoOption.description}
-                                        </Text>
+                                        <View>
+                                            <Text>
+                                                {autoOption.description}
+                                            </Text>
+                                        </View>
                                     </TouchableWithoutFeedback>
                                 </View>
                             )
@@ -97,6 +100,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1, 
         borderBottomColor: "#E7E3E3",
         width: "90%"
+    },
+    input: {
+        marginTop: 60,
+        marginBottom: 30
     }
 });
 

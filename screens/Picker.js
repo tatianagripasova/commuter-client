@@ -1,34 +1,83 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import { Button } from "react-native-elements";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import Input from "../components/Input";
 import ConditionalView from "../components/ConditionalView";
 import Autocomplete from "../screens/Autocomplete";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import WeekdayPicker from "react-native-weekday-picker"
 import moment from "moment";
+import _ from "lodash";
+
+const GOOGLE_MAPS_APIKEY = "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4";
+const DEFAULT_DAYS = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 };
 
 const Picker = props => {
     const [fromLocation, setFromLocation] = useState(props.location);
+    const [fromCoordinates, setFromCoordinates] = useState({});
+    const [toCoordinates, setToCoordinates] = useState({});
     const [toLocation, setToLocation] = useState({});
     const [autocomplete, setAutocomplete] = useState(false);
     const [timePicker, setTimePicker] = useState(false);
     const [datePicker, setDatePicker] = useState(false);
     const [eventTime, setEventTime] = useState(null);
     const [eventDate, setEventDate] = useState(null);
+    const [recurringDays, setRecurringDays] = useState(null);
+
+    const [addressOptions, setAddressOptions] = useState([]);
+    const [autocompleteField, setAutocompleteField] = useState(null);
 
     // TODO: Don't mutate state, remove once main page is ready.
     useEffect(() => {
         setFromLocation(props.location);
     }, [props.location]); 
 
-    const showAutocomplete = () => {
-        console.log('BLA')
+    useEffect(() => {
+        getCoordinates();
+    }, [fromLocation, toLocation]);
+
+    const getCoordinates = async () => {
+        if (!_.isEmpty(fromLocation) && !_.isEmpty(toLocation)) {
+            const placeIds = [fromLocation.id, toLocation.id];
+            const result = await fetch(
+                `http://localhost:3000/coordinates`, {
+                    method: "POST",
+                    headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        placeIds
+                    })
+                }
+            )
+            const [ origin, destination ] = await result.json();
+            setFromCoordinates(origin);
+            setToCoordinates(destination);
+            mapRef.current.fitToCoordinates([origin, destination], {
+                edgePadding: {
+                    bottom: 70, right: 70, top: 70, left: 70,
+                },
+                animated: true,
+            });
+        }
+    };
+
+    const mapRef = useRef();
+
+    const showAutocomplete = (field) => {
+        setAutocompleteField(field);
         setAutocomplete(true);
     };
 
-    const selectAddress = (aa) => {
-        console.log('>>>>>>>>>>>>>>>', aa);
+    const selectAddress = async (location) => {
+        if (autocompleteField == 'from') {
+            setFromLocation(location);
+        } else if (autocompleteField == 'to') {
+            setToLocation(location);
+        }
         setAutocomplete(false);
     }
 
@@ -57,8 +106,63 @@ const Picker = props => {
     const handleDateConfirm = date => {
         const eventDate = moment(date).format("MMM Do YY");
         setEventDate(eventDate);
+        setRecurringDays(null);
         hideDatePicker();
-    }
+    };
+
+    const selectRecurringDays = days => {
+        setRecurringDays({ ...days });
+        setEventDate(null);
+    };
+
+    const autocompleteInputHandler = async (text) => {
+        if (text.length > 1) {
+          const result = await fetch("http://localhost:3000/address", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              input: text, 
+              location: props.region
+            })
+          })
+          const data = await result.json();
+          setAddressOptions(data);
+        }
+      };
+
+    const submitEvent = () => {
+        let error;
+        if (_.isEmpty(fromLocation)) {
+            error = "Please choose starting point";
+            
+        } else if (_.isEmpty(toLocation)) {
+            error = "Please choose destination";
+    
+        } else if (!eventDate && !recurringDays) {
+            error = "Please choose a specific date or a day";
+        } else if (!eventTime) {
+            error = "Please pick a time";
+        }
+        if (error) {
+            Alert.alert(
+                "Enable to save the event", 
+                error
+            )
+        } else {
+            const results = {
+                fromLocation,
+                toLocation, 
+                eventTime, 
+                eventDate, 
+                recurringDays
+            };
+
+            props.onCreateEvent(results);
+        }
+    };
 
     return (
         <ConditionalView 
@@ -67,31 +171,30 @@ const Picker = props => {
         >
             <Autocomplete 
                 visible={autocomplete}
-                autocompleteOptions={[{id:7, description:"bla"}]}
+                autocompleteOptions={addressOptions}
                 defaultOptions={[]}
                 dividerTitle={"Your favourite addresses"}
-                onInputChange={console.log}
+                onInputChange={autocompleteInputHandler}
                 onSelect={selectAddress}
             />
-            <View style={styles.inputContainer}>
-                <TouchableOpacity style={styles.inputWrapper} onPress={showAutocomplete}>
+            <View style={styles.inputsContainer}>
+                <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete('from')}>
                     <Input
-                        style={styles.input}
+                        style={styles.inputFrom}
                         value={fromLocation.description}
                         pointerEvents={"none"}
                     />
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete('to')}>
+                    <Input
+                        style={styles.inputTo}
+                        value={toLocation.description}
+                        placeholder={"where"}
+                        pointerEvents={"none"}
+                    />
+                </TouchableOpacity>
             </View>
-            <View style={styles.inputContainer}>
-            <TouchableOpacity style={styles.inputWrapper} onPress={showAutocomplete}>
-                <Input
-                    style={styles.input}
-                    value={toLocation.description}
-                    placeholder={"where"}
-                    pointerEvents={"none"}
-                />
-            </TouchableOpacity>
-            <View>
+            <View style={styles.dateWrapper}>
                 <Button 
                     title={eventTime ? eventTime : "Pick Time"} 
                     type="clear"
@@ -103,8 +206,6 @@ const Picker = props => {
                     onConfirm={handleTimeConfirm}
                     onCancel={hideTimePicker}
                 />
-            </View>
-            <View>
                 <Button 
                     title={eventDate ? eventDate : "Once"} 
                     type="clear"
@@ -116,16 +217,45 @@ const Picker = props => {
                     onConfirm={handleDateConfirm}
                     onCancel={hideDatePicker}
                 />
-            </View>
-            <View>
-                <Button 
-                    title={eventDate ? eventDate : "Repeat"} 
-                    type="clear"
-                    onPress={showDatePicker} 
+                <Text style={styles.text}>Or Repeat:</Text>
+                <WeekdayPicker
+                    days={recurringDays ? recurringDays : {...DEFAULT_DAYS}}
+                    onChange={selectRecurringDays}
+                    style={styles.dayStyle}
                 />
-                
             </View>
-        </View>
+            <View style={styles.mapWrapper}>
+            <MapView
+                initialRegion={{
+                        latitude: 37.78825,
+                        longitude: -122.4324,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    }}
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
+                showsUserLocation={true} 
+                showsMyLocationButton={true} 
+                ref={mapRef}
+            >
+                {!_.isEmpty(fromCoordinates) && !_.isEmpty(toCoordinates) && (
+                    <MapViewDirections
+                        origin={fromCoordinates}
+                        destination={toCoordinates}
+                        apikey={GOOGLE_MAPS_APIKEY}
+                        strokeWidth={3}
+                    />
+                )}
+                
+            </MapView>
+            </View>
+            <View style={styles.submitButton}>
+                <Button 
+                    title="Save"
+                    type="clear"
+                    onPress={submitEvent}
+                />
+            </View>
         </ConditionalView>
     )
 };
@@ -136,16 +266,42 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%"
     }, 
-    inputContainer: {
+    inputsContainer: {
         flex: 2,
         alignItems: "center",
         width: "80%"
-    }, 
+    },
     inputWrapper: {
         width: "100%"
     },
-    input: {
+    inputFrom: {
+        marginTop: 60,
+        marginBottom: 30,
         paddingLeft: 10
+    },
+    inputTo: {
+        paddingLeft: 10
+    },
+    dateWrapper: {
+        flex: 2,
+        alignContent: "center", 
+        alignItems: "center"
+    },
+    mapWrapper: {
+        flex: 4, 
+        width: "100%",
+        zIndex: 10
+    },
+    map: {
+       ...StyleSheet.absoluteFillObject
+    },
+    text: {
+        margin: 5,
+        fontSize: 18
+    }, 
+    submitButton: {
+        flex: 1, 
+        paddingTop: 20
     }
 });
 
