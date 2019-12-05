@@ -53,15 +53,17 @@ const Picker = props => {
                     })
                 }
             )
-            const [ origin, destination ] = await result.json();
-            setFromCoordinates(origin);
-            setToCoordinates(destination);
-            mapRef.current.fitToCoordinates([origin, destination], {
-                edgePadding: {
-                    bottom: 70, right: 70, top: 70, left: 70,
-                },
-                animated: true,
-            });
+            if(result.status === 200) {
+                const [ origin, destination ] = await result.json();
+                setFromCoordinates(origin);
+                setToCoordinates(destination);
+                mapRef.current.fitToCoordinates([origin, destination], {
+                    edgePadding: {
+                        bottom: 70, right: 70, top: 70, left: 70,
+                    },
+                    animated: true,
+                });
+            }
         }
     };
 
@@ -128,12 +130,14 @@ const Picker = props => {
               location: props.region
             })
           })
-          const data = await result.json();
-          setAddressOptions(data);
+          if(result.status === 200) {
+            const data = await result.json();
+            setAddressOptions(data);
+          }
         }
       };
 
-    const submitEvent = () => {
+    const submitEvent = async() => {
         let error;
         if (_.isEmpty(fromLocation)) {
             error = "Please choose starting point";
@@ -159,9 +163,22 @@ const Picker = props => {
                 eventDate, 
                 recurringDays
             };
-
-            props.onCreateEvent(results);
+            const result = await fetch("http://localhost:3000/event", {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ...results
+                })
+            })
+            if(result.status === 200) {
+                const data = await result.json();
+                console.log(data);
+            }
         }
+        
     };
 
     return (

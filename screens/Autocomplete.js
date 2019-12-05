@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Text, ScrollView, TouchableWithoutFeedback, Keyboard }  from "react-native";
 import Modal from "react-native-modal";
 import Input from "../components/Input";
@@ -7,9 +7,7 @@ const Autocomplete = props => {
     const [textValue, setTextValue] = useState("");
 
     const onValueSelect = (value) => {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
         props.onSelect(value);
-        
     };
 
     const onTextChange = textValue => {
@@ -23,7 +21,7 @@ const Autocomplete = props => {
             coverScreen={true} 
             backdropColor={"#FFFFFF"}
             backdropOpacity={1} 
-            isVisible={props.visible} 
+            isVisible={props.visible}
         >
             <View style={styles.container}>
                 <ScrollView>
@@ -32,6 +30,7 @@ const Autocomplete = props => {
                             style={styles.input}
                             value={textValue}
                             onChangeText={onTextChange}
+                            autoFocus={true}
                         />
                     </View>
                     <View style={styles.optionContainer}> 

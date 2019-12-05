@@ -13,8 +13,6 @@ export const getLocationAsync = async () => {
   
     let location = await Location.getCurrentPositionAsync({});
 
-    console.log(location)
-
     const latitude = location.coords.latitude;
     const longitude = location.coords.longitude;
 
