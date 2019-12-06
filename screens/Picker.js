@@ -178,7 +178,6 @@ const Picker = props => {
                 console.log(data);
             }
         }
-        
     };
 
     return (
