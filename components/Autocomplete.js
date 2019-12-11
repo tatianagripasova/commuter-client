@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Text, ScrollView, TouchableWithoutFeedback, Keyboard }  from "react-native";
 import Modal from "react-native-modal";
-import Input from "../components/Input";
+import Input from "./Input";
 
 const Autocomplete = props => {
     const [textValue, setTextValue] = useState("");

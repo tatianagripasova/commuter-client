@@ -1,19 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-native";
 import Modal from "react-native-modal";
 import Input from "../components/Input";
 import { Button } from "react-native-elements";
 import { SwipeListView } from 'react-native-swipe-list-view';
+import Autocomplete from "../components/Autocomplete";
 import ImageButton from "../components/ImageButton";
 
+
 const Places = props => {
-    const Places = [
-        {
-            label: "Home", 
-            address: "11 Bla St, Miami",
-            id: 1
+    const [autocomplete, setAutocomplete] = useState(false);
+    const [label, setLabel] = useState("");
+    const [address, setAddress] = useState({});
+    const [addressOptions, setAddressOptions] = useState([]);
+    const [places, setPlaces] = useState([]);
+
+    useEffect(() => {
+        getPlaces();
+    }, []); 
+
+    const showAutocomplete = () => {
+        setAutocomplete(true);
+    };
+
+    const labelHandler = inputValue => {
+        setLabel(inputValue)
+    };
+
+    const selectAddress = (value) => {
+        setAddress(value);
+        setAutocomplete(false);
+    };
+    
+    const submitPlace = async () => {
+        const place = { label, address };
+        const result = await fetch("http://localhost:3000/place", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+               place
+            })
+        })
+        if(result.status === 200) {
+            const data = await result.json();
+            getPlaces();
         }
-    ];
+    };
+
+    const getPlaces = async() => {
+        const result = await fetch("http://localhost:3000/places", {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            }
+        })
+        if(result.status === 200) {
+            const places = await result.json();
+            setPlaces(places);
+        }
+    };
+
+    const autocompleteInputHandler = async (text) => {
+        if (text.length > 1) {
+          const result = await fetch("http://localhost:3000/address", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              input: text,
+              location: props.region
+            })
+          })
+          if(result.status === 200) {
+            const data = await result.json();
+            setAddressOptions(data);
+          }
+        }
+      };
+
+    const deletePlace = async(id) => {
+        const result = await fetch(`http://localhost:3000/delete/${id}`, {
+            method: "DELETE",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            }
+        })
+        if(result.status === 200) {
+            await getPlaces();
+        }
+    };
+
     return (
         <Modal
             style={styles.modal}
@@ -25,54 +108,62 @@ const Places = props => {
             <View style={styles.headerContainer}>
                 <Text style={styles.header}> Your Favourite Places</Text>
             </View>
+            <Autocomplete 
+                visible={autocomplete}
+                autocompleteOptions={addressOptions}
+                defaultOptions={[]}
+                onInputChange={autocompleteInputHandler}
+                onSelect={selectAddress}
+            />
             <View style={styles.inputsContainer}>
-                <TouchableOpacity style={styles.inputWrapper}>
+                <View style={styles.inputWrapper}>
                     <Input
                         style={styles.inputLabel}
-                        //value={labelValue}
+                        value={label}
                         placeholder={"Home"}
-                        pointerEvents={"none"}
+                        onChangeText={labelHandler}
                     />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.inputWrapper}>
+                </View>
+                <TouchableOpacity style={styles.inputWrapper} onPress={showAutocomplete}>
                     <Input
                         style={styles.inputAddress}
-                        //value={addressValue}
+                        value={address.description}
                         placeholder={"Address"}
                         pointerEvents={"none"}
                     />
                 </TouchableOpacity>
-            </View>
-            <View style={styles.addButton}>
+                <View style={styles.addButton}>
                     <Button
-                        title={"Add New Place"} 
+                        title={"Add Place"} 
                         type="clear"
-                        //onPress={} 
+                        onPress={submitPlace} 
                     />
+                </View>
             </View>
             <View style={styles.addressList}>
                 <ScrollView>
-                <SwipeListView
-                    data={Places}
-                    keyExtractor={item => Math.random().toString()}
-                    renderItem={(place, rowMap) => {
-                        return (
-                        <View style={styles.rowFront}>
-                            <Text style={styles.text}>{place.item.label}: {place.item.address}</Text>
-                        </View>
-                    )}}
-                    renderHiddenItem={ (place, rowMap) => (
-                        <View style={styles.rowBack}>
-                        <ImageButton
-                            imageStyle={styles.cancelButtonImage}
-                            source={require("../images/trash.png")}
-                            //onPress={}
-                        />
-                        </View>
-                    )}
-                    leftOpenValue={0}
-                    rightOpenValue={-75}
-                />
+                    <SwipeListView
+                        data={places}
+                        keyExtractor={item => Math.random().toString()}
+                        renderItem={(place) => {
+                            return (
+                            <View style={styles.rowFront}>
+                                {place.item.label && (<Text style={styles.textLabel}>{place.item.label}</Text>)}
+                                <Text style={styles.textAddress}>{place.item.formattedAddress}</Text>
+                            </View>
+                        )}}
+                        renderHiddenItem={(place) => (
+                            <View style={styles.rowBack}>
+                            <ImageButton
+                                imageStyle={styles.cancelButtonImage}
+                                source={require("../images/trash.png")}
+                                onPress={() => deletePlace(place.item.id)}
+                            />
+                            </View>
+                        )}
+                        leftOpenValue={0}
+                        rightOpenValue={-75}
+                    />
                 </ScrollView>
             </View>
         </Modal>
@@ -86,8 +177,7 @@ const styles = StyleSheet.create({
         alignItems: "center"
     }, 
     headerContainer: {
-        marginTop: 30,
-        borderWidth: 1
+        marginTop: 30
     },
     header: {
         fontFamily: "System",
@@ -96,8 +186,7 @@ const styles = StyleSheet.create({
     inputsContainer: {
         flex: 1,
         alignItems: "center",
-        width: "80%", 
-        borderWidth: 1
+        width: "80%"
     },
     inputWrapper: {
         width: "100%"
@@ -111,20 +200,22 @@ const styles = StyleSheet.create({
         paddingLeft: 10
     },
     addButton: {
-        flex: 1,
-        paddingTop: 20,
-        borderWidth: 1
-    }, 
+        paddingTop: 15
+    },
     addressList: {
-        flex: 3,
-        borderWidth: 1, 
+        flex: 3, 
         width: "100%", 
-        marginBottom: 15
+        marginTop: 20,
+        marginBottom: 40
     }, 
     textContainer: {
         padding: 15
     },
-    text: {
+    textLabel: {
+        fontSize: 18, 
+        fontWeight: "bold"
+    },
+    textAddress: {
         fontSize: 18
     },
     rowFront: {
@@ -133,7 +224,9 @@ const styles = StyleSheet.create({
         borderBottomColor: "#B9B5B5",
         borderBottomWidth: 1,
         justifyContent: "center",
-        height: 50,
+        minHeight: 60,
+        paddingTop: 7,
+        paddingBottom: 7
       },
       rowBack: {
         alignItems: "flex-end",
@@ -146,7 +239,7 @@ const styles = StyleSheet.create({
       }, 
       cancelButtonImage: {
         width: 35,
-        height: 35, 
+        height: 35,
         marginRight: 30
     }
 });

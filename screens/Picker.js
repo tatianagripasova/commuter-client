@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import { Button } from "react-native-elements";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import Input from "../components/Input";
 import ConditionalView from "../components/ConditionalView";
-import Autocomplete from "../screens/Autocomplete";
+import Autocomplete from "../components/Autocomplete";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import WeekdayPicker from "react-native-weekday-picker"
 import moment from "moment";
@@ -89,7 +89,7 @@ const Picker = props => {
     
     const hideTimePicker = () => {
         setTimePicker(false);
-      };
+    };
     
     const handleTimeConfirm = time => {
         const eventTime = moment(time).format("LT");
@@ -194,14 +194,14 @@ const Picker = props => {
                 onSelect={selectAddress}
             />
             <View style={styles.inputsContainer}>
-                <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete('from')}>
+                <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete("from")}>
                     <Input
                         style={styles.inputFrom}
                         value={fromLocation.description}
                         pointerEvents={"none"}
                     />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete('to')}>
+                <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete("to")}>
                     <Input
                         style={styles.inputTo}
                         value={toLocation.description}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Picker from "./screens/Picker";
 import Places from "./screens/Places";
+import Events from "./screens/Events";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
 
 const defaultOptions = [
@@ -12,7 +13,8 @@ const defaultOptions = [
 export default function App() {
   const [address, setAddress] = useState({});
   const [picker, setPicker] = useState(false);
-  const [places, setPlaces] = useState(true);
+  const [places, setPlaces] = useState(false);
+  const [events, setEvents] = useState(true);
   const [region, setRegion] = useState(defaultRegion);
   const [permission, setPermission] = useState(false);
 
@@ -44,6 +46,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Events 
+        visible={events}
+      />
       <Picker
         visible={picker}
         location={address}
@@ -51,6 +56,7 @@ export default function App() {
       />
       <Places 
         visible={places}
+        region={region}
       />
     </View>
   );
