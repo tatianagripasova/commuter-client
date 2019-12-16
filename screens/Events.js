@@ -14,7 +14,8 @@ const FAKE_EVENTS = [
         toAddress: "255 SW 11th Str Miami 33130",
         time: "5:45 PM",
         estimate: "1 hour",
-        pessimisticEstimate: "2 hours"
+        pessimisticEstimate: "2 hours",
+        reccurent: true
     },
     {
         id: 2, 
@@ -74,11 +75,53 @@ const Events = props => {
                     toAddress: event.destination.formattedAddress,
                     time: moment(event.time, "H:mm:ss").format("hh:mm A"),
                     estimate: "1 hour",
-                    pessimisticEstimate: "2 hours"
+                    pessimisticEstimate: "2 hours",
+                    recurrent: event[`every${moment(eventDate, "MMM Do YY").format("dddd")}`]
                 }
             ));
             setEvents(fields);
-            console.log("!!!!!!!!", data)
+        }
+    };
+
+    const sendDeleteEventRequest = async (id, todayOnly = false) => {
+        const result = fetch(`http://localhost:3000/deleteEvent/${id}`, {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                todayOnly,
+                eventDate
+            })
+        })
+        if(result.status === 200) {
+            getEvents();
+        }
+    };
+
+    const deleteEvent = async({id, recurrent}) => {
+        if(recurrent) {
+            Alert.alert(
+                "You are trying to delete a recurring route",
+                "My Alert Msg",
+                [
+                    {
+                        text: "Only for today",
+                        onPress: () => sendDeleteEventRequest(id, true)
+                    },
+                    {
+                        text: "Remove this event completely", 
+                        onPress: () => sendDeleteEventRequest(id)
+                    },
+                    {
+                        text: "Cancel", 
+                        onPress: () => console.log("Cancel")
+                    }
+                ]
+            )
+        } else {
+            sendDeleteEventRequest(id);
         }
     };
 
@@ -106,8 +149,9 @@ const Events = props => {
             <View style={styles.addressList}>
                 <ScrollView>
                     <SwipeListView
+                        closeOnRowPress={true}
                         data={events}
-                        keyExtractor={item => Math.random().toString()}
+                        keyExtractor={item => item.id.toString()}
                         renderItem={(event) => {
                             return (
                             <View style={styles.rowFront}>
@@ -118,12 +162,15 @@ const Events = props => {
                                 <Text style={styles.text}>Pessimistic Estimate: {event.item.pessimisticEstimate}</Text>
                             </View>
                         )}}
-                        renderHiddenItem={(place) => (
+                        renderHiddenItem={(event, rowMap) => (
                             <View style={styles.rowBack}>
                             <ImageButton
                                 imageStyle={styles.cancelButtonImage}
                                 source={require("../images/trash.png")}
-                                onPress={() => deletePlace(place.item.id)}
+                                onPress={() => {
+                                    deleteEvent(event.item);
+                                    rowMap[event.item.id.toString()].closeRow();
+                                }}
                             />
                             </View>
                         )}
