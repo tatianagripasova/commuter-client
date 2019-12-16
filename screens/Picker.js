@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import { Button } from "react-native-elements";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import Input from "../components/Input";
-import ConditionalView from "../components/ConditionalView";
-import Autocomplete from "../components/Autocomplete";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import WeekdayPicker from "react-native-weekday-picker"
 import moment from "moment";
 import _ from "lodash";
+
+import Input from "../components/Input";
+import ConditionalView from "../components/ConditionalView";
+import Autocomplete from "../components/Autocomplete";
+import AuthContext from "../context/auth";
 
 const GOOGLE_MAPS_APIKEY = "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4";
 const DEFAULT_DAYS = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 };
@@ -29,6 +31,8 @@ const Picker = props => {
     const [addressOptions, setAddressOptions] = useState([]);
     const [autocompleteField, setAutocompleteField] = useState(null);
 
+    const { token, showAuth } = useContext(AuthContext);
+
     // TODO: Don't mutate state, remove once main page is ready.
     useEffect(() => {
         setFromLocation(props.location);
@@ -46,7 +50,8 @@ const Picker = props => {
                     method: "POST",
                     headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Auth-Token": token
                     },
                     body: JSON.stringify({
                         placeIds
@@ -63,6 +68,8 @@ const Picker = props => {
                     },
                     animated: true,
                 });
+            } else if (result.status === 401) {
+                showAuth();
             }
         }
     };
@@ -123,7 +130,8 @@ const Picker = props => {
             method: "POST",
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Auth-Token": token
             },
             body: JSON.stringify({
               input: text, 
@@ -133,6 +141,8 @@ const Picker = props => {
           if(result.status === 200) {
             const data = await result.json();
             setAddressOptions(data);
+          } else if (result.status === 401) {
+            showAuth();
           }
         }
       };
@@ -167,7 +177,8 @@ const Picker = props => {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Auth-Token": token
                 },
                 body: JSON.stringify({
                     ...results
@@ -175,7 +186,8 @@ const Picker = props => {
             })
             if(result.status === 200) {
                 const data = await result.json();
-                console.log(data);
+            } else if (result.status === 401) {
+                showAuth();
             }
         }
     };

@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, View, AsyncStorage } from 'react-native';
+
 import Picker from "./screens/Picker";
 import Places from "./screens/Places";
 import Events from "./screens/Events";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
-
-const defaultOptions = [
-  { label: 'Home', id: 'cry', description: '255 SW 11th'},
-  { label: 'Work', id: 'me', description: 'McLaughlin ave.'}
-];
+import { Authenticate } from "react-native-expo-auth";
+import AuthContext from "./context/auth";
 
 export default function App() {
   const [address, setAddress] = useState({});
@@ -18,9 +16,30 @@ export default function App() {
   const [region, setRegion] = useState(defaultRegion);
   const [permission, setPermission] = useState(false);
 
+  const [authDialog, setAuthDialog] = useState(false);
+  const [token, setToken] = useState("none");
+  const [logins, setLogins] = useState([]);
+
   useEffect(() => {
     getLocation();
+    getTokenAndEmailFromStorage();
   }, []);
+
+  const getTokenAndEmailFromStorage = async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      const logins = await AsyncStorage.getItem("logins");
+      if(token !== null) {
+        setToken(token);
+        setLogins(JSON.parse(logins));
+        setAuthDialog(false);
+      } else {
+        setAuthDialog(true);
+      }
+    } catch(e) {
+      setAuthDialog(true);
+    }
+  };
 
   const getLocation = async () => {
     const { region, status } = await getLocationAsync();
@@ -34,30 +53,85 @@ export default function App() {
       method: "POST", 
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Auth-Token": token
       },
       body: JSON.stringify({
         location: region
       })
-    })
-    const data = await result.json();
-    setAddress(data);
+    }) 
+    if(result.status === 200) {
+      const data = await result.json();
+      setAddress(data);
+    } else if(result.status === 401) {
+        showAuth();
+    }
+  };
+
+  const submitAuth = async(data, route) => {
+    const signUpRaw = await fetch(`http://localhost:3000/${route}`, {
+      method: "POST", 
+      headers: {
+        Accept: 'application/json',
+        "Content-Type": "application/json"
+      }, 
+      body: JSON.stringify(data)
+    });
+    if(signUpRaw.status !== 200) {
+      return {
+        success: false,
+        error: await signUpRaw.text()
+      };
+    }
+    const { token, emails } = await signUpRaw.json();
+    if (token) {
+      setToken(token);
+      setLogins(emails);
+      await AsyncStorage.setItem("userToken", token);
+      await AsyncStorage.setItem("logins", JSON.stringify(emails));
+      setAuthDialog(false);
+    }
+    return {
+      success: true
+    };
+  };
+
+  const submitSignIn = async (data) => await submitAuth(data, "signin");
+  const submitSignUp = async (data) => await submitAuth(data, "signup");
+  const submitBioLogin = async (data) => await submitAuth(data, "biologin");
+  const submitPinCodeRequest = async (data) => await submitAuth(data, "reset");
+  const submitNewPassword = async (data) => await submitAuth(data, "doreset");
+
+  const showAuth = () => {
+    setAuthDialog(true);
   };
 
   return (
     <View style={styles.container}>
-      <Events 
-        visible={events}
+      <Authenticate
+        visible={authDialog}
+        onLogin={submitSignIn} 
+        onSignUp={submitSignUp}
+        onBioLogin={submitBioLogin}
+        logins={logins}
+        onPinCodeRequest={submitPinCodeRequest}
+        onSubmitNewPassword={submitNewPassword}
+        enableBio={true}
       />
-      <Picker
-        visible={picker}
-        location={address}
-        region={region}
-      />
-      <Places 
-        visible={places}
-        region={region}
-      />
+      <AuthContext.Provider value={{token, showAuth}}>
+        <Events 
+          visible={events}
+        />
+        <Picker
+          visible={picker}
+          location={address}
+          region={region}
+        />
+        <Places 
+          visible={places}
+          region={region}
+        />
+      </AuthContext.Provider>
     </View>
   );
 };

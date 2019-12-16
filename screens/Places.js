@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-native";
 import Modal from "react-native-modal";
-import Input from "../components/Input";
 import { Button } from "react-native-elements";
 import { SwipeListView } from 'react-native-swipe-list-view';
+
+import Input from "../components/Input";
 import Autocomplete from "../components/Autocomplete";
 import ImageButton from "../components/ImageButton";
-
+import AuthContext from "../context/auth";
 
 const Places = props => {
     const [autocomplete, setAutocomplete] = useState(false);
@@ -14,6 +15,8 @@ const Places = props => {
     const [address, setAddress] = useState({});
     const [addressOptions, setAddressOptions] = useState([]);
     const [places, setPlaces] = useState([]);
+
+    const { token, showAuth } = useContext(AuthContext);
 
     useEffect(() => {
         getPlaces();
@@ -38,7 +41,8 @@ const Places = props => {
             method: "POST",
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Auth-Token": token
             },
             body: JSON.stringify({
                place
@@ -47,6 +51,8 @@ const Places = props => {
         if(result.status === 200) {
             const data = await result.json();
             getPlaces();
+        } else if (result.status === 401) {
+            showAuth();
         }
     };
 
@@ -55,12 +61,15 @@ const Places = props => {
             method: "GET",
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Auth-Token": token
             }
         })
         if(result.status === 200) {
             const places = await result.json();
             setPlaces(places);
+        } else if (result.status === 401) {
+            showAuth();
         }
     };
 
@@ -70,7 +79,8 @@ const Places = props => {
             method: "POST",
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Auth-Token": token
             },
             body: JSON.stringify({
               input: text,
@@ -80,6 +90,8 @@ const Places = props => {
           if(result.status === 200) {
             const data = await result.json();
             setAddressOptions(data);
+          } else if(result.status === 401) {
+                showAuth();
           }
         }
       };
@@ -89,11 +101,14 @@ const Places = props => {
             method: "DELETE",
             headers: {
                 Accept: "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Auth-Token": token
             }
         })
         if(result.status === 200) {
             await getPlaces();
+        } else if (result.status === 401) {
+            showAuth();
         }
     };
 

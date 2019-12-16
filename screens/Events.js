@@ -1,39 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, StyleSheet, Text, ScrollView, Alert} from "react-native";
 import { Button } from "react-native-elements";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import ConditionalView from "../components/ConditionalView";
 import { SwipeListView } from 'react-native-swipe-list-view';
-import ImageButton from "../components/ImageButton";
 import moment from "moment";
 
-const FAKE_EVENTS = [
-    {
-        id: 1,
-        fromAddress: "11445 Dutch Iris Dr.",
-        toAddress: "255 SW 11th Str Miami 33130",
-        time: "5:45 PM",
-        estimate: "1 hour",
-        pessimisticEstimate: "2 hours",
-        reccurent: true
-    },
-    {
-        id: 2, 
-        fromAddress: "12345 Bla, Miami", 
-        toAddress: "67890 Foo, Miami", 
-        time: "10:05AM", 
-        estimate: "40 min", 
-        pessimisticEstimate: "1 hour"
-    }
-];
+import ConditionalView from "../components/ConditionalView";
+import ImageButton from "../components/ImageButton";
+import AuthContext from "../context/auth";
 
 const Events = props => {
     const [datePicker, setDatePicker] = useState(false);
     const [eventDate, setEventDate] = useState(moment().format("MMM Do YY"));
-    const [events, setEvents] = useState(FAKE_EVENTS);
+    const [events, setEvents] = useState([]);
+
+    const { token, showAuth } = useContext(AuthContext);
 
     useEffect(() => {
-        getEvents();
+        if (token) {
+            getEvents();
+        }
     }, []);
 
     useEffect(() => {
@@ -60,7 +46,8 @@ const Events = props => {
             method: "POST",
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Auth-Token": token
             },
             body: JSON.stringify({
                 date
@@ -80,6 +67,8 @@ const Events = props => {
                 }
             ));
             setEvents(fields);
+        } else if (result.status === 401) {
+            showAuth();
         }
     };
 
@@ -88,7 +77,8 @@ const Events = props => {
             method: "DELETE",
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Auth-Token": token
             },
             body: JSON.stringify({
                 todayOnly,
@@ -97,6 +87,8 @@ const Events = props => {
         })
         if(result.status === 200) {
             getEvents();
+        } else if (result.status === 401) {
+            showAuth();
         }
     };
 

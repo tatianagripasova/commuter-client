@@ -2056,6 +2056,13 @@ expo-linear-gradient@~7.0.0:
   resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-7.0.1.tgz#86b8f22cb76fb1594cce6527c22e3182c7e98b6c"
   integrity sha512-YJsvA7nx8sMcV1+XhIsqT5+tyHhJi87AxgFW4fBlvUr9gAXhPMvUwkNMPPIkyOpKiEMPuQ7yWS29qwZdOHBGFQ==
 
+expo-local-authentication@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-7.0.0.tgz#aca6b79e59e53ec3d44d4951203abb1a85d9f5c6"
+  integrity sha512-LTFMc8A7hm0Glgs6fSdkpHzrGH2EVqpUPdLQCyvMNwhQMncsh9Q13kzuNhrSjeBX+4M9c8HiH5OymETiC4GQYA==
+  dependencies:
+    invariant "^2.2.4"
+
 expo-location@^7.0.0, expo-location@~7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-7.0.0.tgz#de5818f828354c681a173471e4dc25ec795a9b42"
@@ -4291,6 +4298,16 @@ react-native-elements@^1.2.7:
     react-native-ratings "^6.3.0"
     react-native-status-bar-height "^2.2.0"
 
+react-native-expo-auth@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-expo-auth/-/react-native-expo-auth-0.0.5.tgz#e21b77f1d992f4e2b62d35b45fc029370c30eb33"
+  integrity sha512-ZrY+wQuLcAUYcui77lR+SkUKEAgiBK8Piu0l/qleV3QHmvRNq3jrm9BMEJYOxBBqmHsMNSP+mBCIw8acX1VyTg==
+  dependencies:
+    expo-constants "~7.0.0"
+    expo-local-authentication "^7.0.0"
+    prop-types "^15.7.2"
+    tcomb-form-native "^0.6.20"
+
 react-native-maps-directions@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/react-native-maps-directions/-/react-native-maps-directions-1.7.3.tgz#cb182e87e30427816b47dea2f9f88f8f40de3b83"
@@ -5046,6 +5063,25 @@ tar@^4:
     mkdirp "^0.5.0"
     safe-buffer "^5.1.2"
     yallist "^3.0.3"
+
+tcomb-form-native@^0.6.20:
+  version "0.6.20"
+  resolved "https://registry.yarnpkg.com/tcomb-form-native/-/tcomb-form-native-0.6.20.tgz#81771faf86536a5d4c0f492885eb229324d47ea5"
+  integrity sha512-tuvLmdii2zvkevzFKMS1lYbmE5BeKuRF+sokVqllfjwrViLjgdSCD2Y8WZHUYbUMTbBfEUF65F0vd5zP+Owr2Q==
+  dependencies:
+    tcomb-validation "^3.0.0"
+
+tcomb-validation@^3.0.0:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/tcomb-validation/-/tcomb-validation-3.4.1.tgz#a7696ec176ce56a081d9e019f8b732a5a8894b65"
+  integrity sha512-urVVMQOma4RXwiVCa2nM2eqrAomHROHvWPuj6UkDGz/eb5kcy0x6P0dVt6kzpUZtYMNoAqJLWmz1BPtxrtjtrA==
+  dependencies:
+    tcomb "^3.0.0"
+
+tcomb@^3.0.0:
+  version "3.2.29"
+  resolved "https://registry.yarnpkg.com/tcomb/-/tcomb-3.2.29.tgz#32404fe9456d90c2cf4798682d37439f1ccc386c"
+  integrity sha512-di2Hd1DB2Zfw6StGv861JoAF5h/uQVu/QJp2g8KVbtfKnoHdBQl5M32YWq6mnSYBQ1vFFrns5B1haWJL7rKaOQ==
 
 temp@0.8.3:
   version "0.8.3"
