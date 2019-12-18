@@ -5,6 +5,7 @@ import Picker from "./screens/Picker";
 import Places from "./screens/Places";
 import Events from "./screens/Events";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
+import { getPushTokenAsync } from "./utils/notifications";
 import { Authenticate } from "react-native-expo-auth";
 import AuthContext from "./context/auth";
 import ShowScreen from "./context/screens";
@@ -15,10 +16,10 @@ export default function App() {
   const [places, setPlaces] = useState(false);
   const [events, setEvents] = useState(true);
   const [region, setRegion] = useState(defaultRegion);
-  const [permission, setPermission] = useState(false);
 
   const [authDialog, setAuthDialog] = useState(false);
   const [token, setToken] = useState("none");
+  const [pushToken, setPushToken] = useState(null);
   const [logins, setLogins] = useState([]);
 
   const [refreshEvents, setRefreshEvents] = useState(false);
@@ -27,6 +28,7 @@ export default function App() {
     getLocation();
     getPushToken();
     getTokenAndEmailFromStorage();
+    AsyncStorage.clear();
   }, []);
 
   const getTokenAndEmailFromStorage = async () => {
@@ -45,10 +47,14 @@ export default function App() {
     }
   };
 
+  const getPushToken = async () => {
+    const { token } = await getPushTokenAsync();
+    setPushToken(token);
+  };
+
   const getLocation = async () => {
     const { region, status } = await getLocationAsync();
     setRegion(region);
-    setPermission(status);
     await getAddressByLocation(region);
   };
 
@@ -68,7 +74,7 @@ export default function App() {
       const data = await result.json();
       setAddress(data);
     } else if(result.status === 401) {
-        showAuth();
+      showAuth();
     }
   };
 
@@ -79,7 +85,10 @@ export default function App() {
         Accept: 'application/json',
         "Content-Type": "application/json"
       }, 
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        ...data,
+        pushToken
+      })
     });
     if(signUpRaw.status !== 200) {
       return {
