@@ -1,36 +1,50 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, Text, ScrollView, Alert} from "react-native";
+import { View, StyleSheet, Text, ScrollView, Alert, TouchableOpacity, Image } from "react-native";
 import { Button } from "react-native-elements";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import SideMenu from "react-native-side-menu";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import moment from "moment";
 
+import AuthContext from "../context/auth";
 import ConditionalView from "../components/ConditionalView";
 import ImageButton from "../components/ImageButton";
-import AuthContext from "../context/auth";
+import Menu from "../components/Menu";
+import ShowScreen from "../context/screens";
 
 const Events = props => {
     const [datePicker, setDatePicker] = useState(false);
     const [eventDate, setEventDate] = useState(moment().format("MMM Do YY"));
     const [events, setEvents] = useState([]);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const { token, showAuth } = useContext(AuthContext);
+    const { refreshEvents, setRefreshEvents } = useContext(ShowScreen);
 
     useEffect(() => {
-        if (token) {
+        if (token && token !== 'none') {
             getEvents();
         }
     }, []);
 
     useEffect(() => {
-        getEvents();
-    }, [eventDate]);
+        if (token && token !== 'none') {
+            getEvents();
+        }
+    }, [eventDate, token]);
+
+    useEffect(() => {
+        if (refreshEvents === true && token && token !== 'none') {
+            getEvents();
+            setRefreshEvents(false);
+        }
+    }, [refreshEvents]);
 
     const hideDatePicker = () => {
         setDatePicker(false);
     };
 
-    showDatePicker = () => {
+    const showDatePicker = () => {
         setDatePicker(true);
     };
 
@@ -73,7 +87,7 @@ const Events = props => {
     };
 
     const sendDeleteEventRequest = async (id, todayOnly = false) => {
-        const result = fetch(`http://localhost:3000/deleteEvent/${id}`, {
+        const result = await fetch(`http://localhost:3000/deleteEvent/${id}`, {
             method: "DELETE",
             headers: {
               Accept: "application/json",
@@ -116,61 +130,85 @@ const Events = props => {
             sendDeleteEventRequest(id);
         }
     };
+    const menu = <Menu visible={menuOpen} navigator={navigator} setMenuOpen={setMenuOpen}/>
+    const uri = 'https://pickaface.net/gallery/avatar/Opi51c74d0125fd4.png';
+
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen)
+    };
 
     return (
         <ConditionalView
             visible={props.visible}
             style={styles.conditionalView}
-        >
-            <View style={styles.headerContainer}>
-                <Text style={styles.header}>Your Daily Commute</Text>
-            </View>
-            <View style={styles.dateWrapper}>
-                <Button 
-                    title={eventDate} 
-                    type="clear"
-                    onPress={showDatePicker} 
-                />
-                <DateTimePickerModal
-                    isVisible={datePicker}
-                    mode={"date"}
-                    onConfirm={handleDateConfirm}
-                    onCancel={hideDatePicker}
-                />
-            </View>
-            <View style={styles.addressList}>
-                <ScrollView>
-                    <SwipeListView
-                        closeOnRowPress={true}
-                        data={events}
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={(event) => {
-                            return (
-                            <View style={styles.rowFront}>
-                                <Text style={styles.text}>To: {event.item.fromAddress}</Text>
-                                <Text style={styles.text}>From: {event.item.toAddress}</Text>
-                                <Text style={styles.text}>At: {event.item.time}</Text>
-                                <Text style={styles.text}>Estimate: {event.item.estimate}</Text>
-                                <Text style={styles.text}>Pessimistic Estimate: {event.item.pessimisticEstimate}</Text>
-                            </View>
-                        )}}
-                        renderHiddenItem={(event, rowMap) => (
-                            <View style={styles.rowBack}>
-                            <ImageButton
-                                imageStyle={styles.cancelButtonImage}
-                                source={require("../images/trash.png")}
-                                onPress={() => {
-                                    deleteEvent(event.item);
-                                    rowMap[event.item.id.toString()].closeRow();
-                                }}
-                            />
-                            </View>
-                        )}
-                        leftOpenValue={0}
-                        rightOpenValue={-75}
+        > 
+            <SideMenu
+                menu={menu} 
+                isOpen={menuOpen} 
+                onChange={setMenuOpen}
+            >
+                <View style={styles.container}>
+                    <View style={styles.menuButton}>
+                        <TouchableOpacity
+                            onPress={toggleMenu}
+                        >
+                        <Image
+                            source={{ uri }}
+                            style={{ width: 50, height: 50 }}
+                        />
+                        </TouchableOpacity>
+                     </View>
+                    <View style={styles.headerContainer}>
+                        <Text style={styles.header}>Your Daily Commute</Text>
+                    </View>
+                </View>
+                <View style={styles.dateWrapper}>
+                    <Button 
+                        title={eventDate} 
+                        type="clear"
+                        onPress={showDatePicker} 
                     />
-                </ScrollView>
-            </View>
+                    <DateTimePickerModal
+                        isVisible={datePicker}
+                        mode={"date"}
+                        onConfirm={handleDateConfirm}
+                        onCancel={hideDatePicker}
+                    />
+                </View>
+                <View style={styles.addressList}>
+                    <ScrollView>
+                        <SwipeListView
+                            closeOnRowPress={true}
+                            data={events}
+                            keyExtractor={item => item.id.toString()}
+                            renderItem={(event) => {
+                                return (
+                                <View style={styles.rowFront}>
+                                    <Text style={styles.text}>To: {event.item.fromAddress}</Text>
+                                    <Text style={styles.text}>From: {event.item.toAddress}</Text>
+                                    <Text style={styles.text}>At: {event.item.time}</Text>
+                                    <Text style={styles.text}>Estimate: {event.item.estimate}</Text>
+                                    <Text style={styles.text}>Pessimistic Estimate: {event.item.pessimisticEstimate}</Text>
+                                </View>
+                            )}}
+                            renderHiddenItem={(event, rowMap) => (
+                                <View style={styles.rowBack}>
+                                <ImageButton
+                                    imageStyle={styles.cancelButtonImage}
+                                    source={require("../images/trash.png")}
+                                    onPress={() => {
+                                        deleteEvent(event.item);
+                                        rowMap[event.item.id.toString()].closeRow();
+                                    }}
+                                />
+                                </View>
+                            )}
+                            leftOpenValue={0}
+                            rightOpenValue={-75}
+                        />
+                    </ScrollView>
+                </View>
+            </SideMenu>
         </ConditionalView>
     )
 };
@@ -179,10 +217,26 @@ const styles = StyleSheet.create({
     conditionalView: {
         flex: 1,
         alignItems: "center",
-        width: "100%"
+        width: "100%",
+    },
+    container: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        marginTop: 30,
+        backgroundColor: "#ffffff"
+    },
+    menuButton: {
+        paddingTop: 20, 
+        paddingLeft: 10,
+        borderWidth: 1
     },
     headerContainer: {
-        marginTop: 50
+        flex: 3,
+        alignContent: "center",
+        alignItems: "center",
+        paddingTop: 20,
+        borderWidth: 1
     },
     header: {
         fontFamily: "System",
@@ -192,12 +246,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignContent: "center", 
         alignItems: "center",
-        paddingTop: 40,
-        borderWidth: 1
+        paddingTop: 50,
+        backgroundColor: "#ffffff"
     },
     addressList: {
         flex: 3, 
-        width: "100%"
+        width: "100%",
+        backgroundColor: "#ffffff"
     }, 
     textContainer: {
         padding: 15
@@ -230,7 +285,6 @@ const styles = StyleSheet.create({
         height: 35,
         marginRight: 30
     }
-
 });
 
 export default Events;

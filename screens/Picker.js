@@ -8,10 +8,13 @@ import WeekdayPicker from "react-native-weekday-picker"
 import moment from "moment";
 import _ from "lodash";
 
-import Input from "../components/Input";
+
 import ConditionalView from "../components/ConditionalView";
-import Autocomplete from "../components/Autocomplete";
 import AuthContext from "../context/auth";
+import Autocomplete from "../components/Autocomplete";
+import Input from "../components/Input";
+import ImageButton from "../components/ImageButton";
+import ShowScreen from "../context/screens";
 
 const GOOGLE_MAPS_APIKEY = "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4";
 const DEFAULT_DAYS = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 };
@@ -32,6 +35,7 @@ const Picker = props => {
     const [autocompleteField, setAutocompleteField] = useState(null);
 
     const { token, showAuth } = useContext(AuthContext);
+    const { setEvents, setPicker, setRefreshEvents } = useContext(ShowScreen);
 
     // TODO: Don't mutate state, remove once main page is ready.
     useEffect(() => {
@@ -72,6 +76,12 @@ const Picker = props => {
                 showAuth();
             }
         }
+    };
+
+    const showEventsPage = () => {
+        setRefreshEvents(true);
+        setEvents(true);
+        setPicker(false);
     };
 
     const mapRef = useRef();
@@ -185,7 +195,7 @@ const Picker = props => {
                 })
             })
             if(result.status === 200) {
-                const data = await result.json();
+                showEventsPage();
             } else if (result.status === 401) {
                 showAuth();
             }
@@ -283,6 +293,11 @@ const Picker = props => {
                     type="clear"
                     onPress={submitEvent}
                 />
+                    <ImageButton
+                        imageStyle={styles.cancelButton}
+                        source={require("../images/cancel.png")}
+                        onPress={showEventsPage}
+                    />
             </View>
         </ConditionalView>
     )
@@ -330,7 +345,13 @@ const styles = StyleSheet.create({
     submitButton: {
         flex: 1, 
         paddingTop: 20
+    },
+    cancelButton: {
+        width: 30,
+        height: 30,
+        paddingBottom: 30
     }
+
 });
 
 export default Picker;

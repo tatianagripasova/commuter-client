@@ -7,6 +7,7 @@ import Events from "./screens/Events";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
 import { Authenticate } from "react-native-expo-auth";
 import AuthContext from "./context/auth";
+import ShowScreen from "./context/screens";
 
 export default function App() {
   const [address, setAddress] = useState({});
@@ -20,8 +21,11 @@ export default function App() {
   const [token, setToken] = useState("none");
   const [logins, setLogins] = useState([]);
 
+  const [refreshEvents, setRefreshEvents] = useState(false);
+
   useEffect(() => {
     getLocation();
+    getPushToken();
     getTokenAndEmailFromStorage();
   }, []);
 
@@ -119,18 +123,20 @@ export default function App() {
         enableBio={true}
       />
       <AuthContext.Provider value={{token, showAuth}}>
-        <Events 
-          visible={events}
-        />
-        <Picker
-          visible={picker}
-          location={address}
-          region={region}
-        />
-        <Places 
-          visible={places}
-          region={region}
-        />
+        <ShowScreen.Provider value={{setPicker, setEvents, setPlaces, refreshEvents, setRefreshEvents}}>
+          <Events 
+            visible={events}
+          />
+          <Picker
+            visible={picker}
+            location={address}
+            region={region}
+          />
+          <Places 
+            visible={places}
+            region={region}
+          />
+       </ShowScreen.Provider>
       </AuthContext.Provider>
     </View>
   );

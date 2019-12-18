@@ -8,6 +8,7 @@ import Input from "../components/Input";
 import Autocomplete from "../components/Autocomplete";
 import ImageButton from "../components/ImageButton";
 import AuthContext from "../context/auth";
+import ShowScreen from "../context/screens";
 
 const Places = props => {
     const [autocomplete, setAutocomplete] = useState(false);
@@ -17,10 +18,18 @@ const Places = props => {
     const [places, setPlaces] = useState([]);
 
     const { token, showAuth } = useContext(AuthContext);
+    const { setPlaces: setPlacesWindow, setEvents } = useContext(ShowScreen);
 
     useEffect(() => {
-        getPlaces();
-    }, []); 
+        if (token && token !== 'none') {
+            getPlaces();
+        }
+    }, [token]); 
+
+    const showEventsPage = () => {
+        setEvents(true);
+        setPlacesWindow(false);
+    };
 
     const showAutocomplete = () => {
         setAutocomplete(true);
@@ -180,6 +189,13 @@ const Places = props => {
                         rightOpenValue={-75}
                     />
                 </ScrollView>
+                <View>
+                    <ImageButton
+                        imageStyle={styles.cancelButton}
+                        source={require("../images/cancel.png")}
+                        onPress={showEventsPage}
+                    />
+                </View>
             </View>
         </Modal>
     )
@@ -256,6 +272,11 @@ const styles = StyleSheet.create({
         width: 35,
         height: 35,
         marginRight: 30
+    },
+    cancelButton: {
+        width: 30,
+        height: 30,
+        paddingBottom: 30
     }
 });
 
