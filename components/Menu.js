@@ -1,13 +1,15 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, Dimensions, ScrollView, Image } from "react-native";
+import { StyleSheet, View, Text, Dimensions, ScrollView, Image, AsyncStorage, Alert } from "react-native";
 import { Button } from "react-native-elements";
+
+import AuthContext from "../context/auth";
 import ShowScreen from "../context/screens";
 
 const window = Dimensions.get('window');
-const uri = 'https://pickaface.net/gallery/avatar/Opi51c74d0125fd4.png';
 
 const Menu = props => {
     const { setPicker, setPlaces, setEvents } = useContext(ShowScreen);
+    const { email, showAuth } = useContext(AuthContext);
 
     const showPlacesPage = () => {
         setPlaces(true);
@@ -21,6 +23,28 @@ const Menu = props => {
         props.setMenuOpen(false);
     };
 
+    const showLogOutAlert = () => {
+        Alert.alert(
+            "Are you sure you want to log out?",
+            "",
+            [
+                {
+                    text: "Log Out", onPress: () => logOutHandler()
+                },
+                {
+                    text: 'Cancel',
+                    style: "cancel",
+                }
+            ]
+        )
+    };
+
+    const logOutHandler = async () => {
+        await AsyncStorage.removeItem("userToken");
+        await AsyncStorage.removeItem("email");
+        showAuth();
+    };
+
     const { visible } = props;
     if (!visible) {
         return null;
@@ -30,8 +54,9 @@ const Menu = props => {
             <View style={styles.avatarContainer}>
                 <Image
                     style={styles.avatar}
-                    source={{ uri }}
+                    source={require("../images/user.png")}
                 />
+                <Text style={styles.email}>{email}</Text>
             </View>
             <View>
                 <View style={styles.menuButton}>
@@ -46,6 +71,12 @@ const Menu = props => {
                         type="clear"
                         titleStyle={styles.item}
                         onPress={showPickerPage}
+                    />
+                    <Button
+                        title={"Log Out"}
+                        type="clear"
+                        titleStyle={styles.item}
+                        onPress={showLogOutAlert}
                     />
                 </View>
             </View>
@@ -68,10 +99,15 @@ const styles = StyleSheet.create({
         paddingLeft: 20
     },
     avatar: {
-        width: 48,
-        height: 48,
+        width: 53,
+        height: 53,
         borderRadius: 24,
         flex: 1,
+    },
+    email: {
+        paddingTop: 5,
+        fontFamily: "System",
+        fontSize: 18
     },
     menuButton: {
         flex: 1,

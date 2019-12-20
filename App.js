@@ -19,6 +19,7 @@ export default function App() {
 
   const [authDialog, setAuthDialog] = useState(false);
   const [token, setToken] = useState("none");
+  const [email, setEmail] = useState("none");
   const [pushToken, setPushToken] = useState(null);
   const [logins, setLogins] = useState([]);
 
@@ -28,16 +29,18 @@ export default function App() {
     getLocation();
     getPushToken();
     getTokenAndEmailFromStorage();
-    AsyncStorage.clear();
+    // AsyncStorage.clear();
   }, []);
 
   const getTokenAndEmailFromStorage = async () => {
     try {
       const token = await AsyncStorage.getItem("userToken");
       const logins = await AsyncStorage.getItem("logins");
+      const email = await AsyncStorage.getItem("email");
       if(token !== null) {
         setToken(token);
         setLogins(JSON.parse(logins));
+        setEmail(email);
         setAuthDialog(false);
       } else {
         setAuthDialog(true);
@@ -63,8 +66,7 @@ export default function App() {
       method: "POST", 
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json",
-        "Auth-Token": token
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         location: region
@@ -73,8 +75,6 @@ export default function App() {
     if(result.status === 200) {
       const data = await result.json();
       setAddress(data);
-    } else if(result.status === 401) {
-      showAuth();
     }
   };
 
@@ -102,6 +102,9 @@ export default function App() {
       setLogins(emails);
       await AsyncStorage.setItem("userToken", token);
       await AsyncStorage.setItem("logins", JSON.stringify(emails));
+      if (data.email) {
+        await AsyncStorage.setItem("email", data.email);
+      }
       setAuthDialog(false);
     }
     return {
@@ -131,7 +134,7 @@ export default function App() {
         onSubmitNewPassword={submitNewPassword}
         enableBio={true}
       />
-      <AuthContext.Provider value={{token, showAuth}}>
+      <AuthContext.Provider value={{token, email, showAuth}}>
         <ShowScreen.Provider value={{setPicker, setEvents, setPlaces, refreshEvents, setRefreshEvents}}>
           <Events 
             visible={events}

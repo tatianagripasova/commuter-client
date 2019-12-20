@@ -153,8 +153,8 @@ const Events = props => {
                             onPress={toggleMenu}
                         >
                         <Image
-                            source={{ uri }}
-                            style={{ width: 50, height: 50 }}
+                            source={require("../images/menu.png")}
+                            style={styles.menuImage}
                         />
                         </TouchableOpacity>
                      </View>
@@ -229,14 +229,18 @@ const styles = StyleSheet.create({
     menuButton: {
         paddingTop: 20, 
         paddingLeft: 10,
-        borderWidth: 1
+        paddingLeft: 20
+    },
+    menuImage: {
+        width: 40, 
+        height: 40
     },
     headerContainer: {
-        flex: 3,
+        flex: 1,
         alignContent: "center",
         alignItems: "center",
-        paddingTop: 20,
-        borderWidth: 1
+        paddingTop: 22,
+        paddingRight: 50
     },
     header: {
         fontFamily: "System",
@@ -246,11 +250,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignContent: "center", 
         alignItems: "center",
-        paddingTop: 50,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
+        paddingTop: 10
     },
     addressList: {
-        flex: 3, 
+        flex: 5,
         width: "100%",
         backgroundColor: "#ffffff"
     }, 
