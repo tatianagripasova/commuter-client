@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, AsyncStorage } from 'react-native';
 
 import Picker from "./screens/Picker";
@@ -135,13 +135,12 @@ export default function App() {
         enableBio={true}
       />
       <AuthContext.Provider value={{token, email, showAuth}}>
-        <ShowScreen.Provider value={{setPicker, setEvents, setPlaces, refreshEvents, setRefreshEvents}}>
+        <ShowScreen.Provider value={{setPicker, setEvents, setPlaces, refreshEvents, setRefreshEvents, address}}>
           <Events 
             visible={events}
           />
           <Picker
             visible={picker}
-            location={address}
             region={region}
           />
           <Places 

@@ -64,7 +64,8 @@ const Events = props => {
               "Auth-Token": token
             },
             body: JSON.stringify({
-                date
+                date,
+                utcOffset: moment().utcOffset()
             })
         })
         if(result.status === 200) {
@@ -74,9 +75,9 @@ const Events = props => {
                     id: event.id,
                     fromAddress: event.origin.formattedAddress,
                     toAddress: event.destination.formattedAddress,
-                    time: moment(event.time, "H:mm:ss").format("hh:mm A"),
-                    estimate: "1 hour",
-                    pessimisticEstimate: "2 hours",
+                    time: moment(event.time, "H:mm:ss").add(moment().utcOffset(), "minutes").format("hh:mm A"),
+                    estimate: moment.duration(event.estimatedTime, "seconds").humanize(),
+                    realtimeEstimate: event.realTime ? moment.duration(event.realTime, "seconds").humanize() : null,
                     recurrent: event[`every${moment(eventDate, "MMM Do YY").format("dddd")}`]
                 }
             ));
@@ -131,7 +132,6 @@ const Events = props => {
         }
     };
     const menu = <Menu visible={menuOpen} navigator={navigator} setMenuOpen={setMenuOpen}/>
-    const uri = 'https://pickaface.net/gallery/avatar/Opi51c74d0125fd4.png';
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen)
@@ -187,8 +187,8 @@ const Events = props => {
                                     <Text style={styles.text}>To: {event.item.fromAddress}</Text>
                                     <Text style={styles.text}>From: {event.item.toAddress}</Text>
                                     <Text style={styles.text}>At: {event.item.time}</Text>
-                                    <Text style={styles.text}>Estimate: {event.item.estimate}</Text>
-                                    <Text style={styles.text}>Pessimistic Estimate: {event.item.pessimisticEstimate}</Text>
+                                    <Text style={styles.text}>Estimated Time: {event.item.estimate}</Text>
+                                    {event.item.realtimeEstimate && (<Text style={styles.text}>Time In Traffic: {event.item.realtimeEstimate}</Text>)}
                                 </View>
                             )}}
                             renderHiddenItem={(event, rowMap) => (

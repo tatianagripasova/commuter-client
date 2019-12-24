@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Text, ScrollView, TouchableWithoutFeedback, Keyboard }  from "react-native";
-import Modal from "react-native-modal";
-import Input from "./Input";
+import React, { useState } from "react";
+import { View, StyleSheet, Text, ScrollView, TouchableWithoutFeedback }  from "react-native";
 
+import Input from "./Input";
+import ImageButton from "../components/ImageButton";
+import Modal from "react-native-modal";
 const Autocomplete = props => {
     const [textValue, setTextValue] = useState("");
 
@@ -69,6 +70,13 @@ const Autocomplete = props => {
                         })}
                     </View>
                 </ScrollView>
+                <View style={styles.buttonContainer}>
+                    <ImageButton
+                        imageStyle={styles.cancelButton}
+                        source={require("../images/cancel.png")}
+                        onPress={props.hideAutocomplete}
+                    />
+                </View>
             </View>
         </Modal>
     )
@@ -103,6 +111,13 @@ const styles = StyleSheet.create({
     input: {
         marginTop: 60,
         marginBottom: 30
+    },
+    buttonContainer: {
+        flex: 1
+    },
+    cancelButton: {
+        width: 40,
+        height: 40
     }
 });
 

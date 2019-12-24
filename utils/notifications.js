@@ -11,7 +11,7 @@ export const getPushTokenAsync = async () => {
         }
     } catch (err) {
         return {
-            token: ''
+            token: ""
         }
     }
     

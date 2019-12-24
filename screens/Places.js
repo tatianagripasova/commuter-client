@@ -57,6 +57,8 @@ const Places = props => {
                place
             })
         })
+        setLabel("");
+        setAddress("");
         if(result.status === 200) {
             const data = await result.json();
             getPlaces();
@@ -121,6 +123,10 @@ const Places = props => {
         }
     };
 
+    const hideAutocomplete = () => {
+        setAutocomplete(false);
+    };
+
     return (
         <Modal
             style={styles.modal}
@@ -138,6 +144,7 @@ const Places = props => {
                 defaultOptions={[]}
                 onInputChange={autocompleteInputHandler}
                 onSelect={selectAddress}
+                hideAutocomplete={hideAutocomplete}
             />
             <View style={styles.inputsContainer}>
                 <View style={styles.inputWrapper}>

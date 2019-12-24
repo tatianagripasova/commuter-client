@@ -20,7 +20,7 @@ const GOOGLE_MAPS_APIKEY = "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4";
 const DEFAULT_DAYS = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 };
 
 const Picker = props => {
-    const [fromLocation, setFromLocation] = useState(props.location);
+    const [fromLocation, setFromLocation] = useState({});
     const [fromCoordinates, setFromCoordinates] = useState({});
     const [toCoordinates, setToCoordinates] = useState({});
     const [toLocation, setToLocation] = useState({});
@@ -35,12 +35,11 @@ const Picker = props => {
     const [autocompleteField, setAutocompleteField] = useState(null);
 
     const { token, showAuth } = useContext(AuthContext);
-    const { setEvents, setPicker, setRefreshEvents } = useContext(ShowScreen);
+    const { setEvents, setPicker, setRefreshEvents, address } = useContext(ShowScreen);
 
-    // TODO: Don't mutate state, remove once main page is ready.
     useEffect(() => {
-        setFromLocation(props.location);
-    }, [props.location]); 
+        setFromLocation(address);
+    }, [address]); 
 
     useEffect(() => {
         getCoordinates();
@@ -181,7 +180,8 @@ const Picker = props => {
                 toLocation, 
                 eventTime, 
                 eventDate, 
-                recurringDays
+                recurringDays,
+                utcOffset: moment().utcOffset()
             };
             const result = await fetch("http://localhost:3000/event", {
                 method: "POST",
@@ -194,6 +194,10 @@ const Picker = props => {
                     ...results
                 })
             })
+            setFromLocation(address);
+            setFromCoordinates({});
+            setToLocation({});
+            setToCoordinates({});
             if(result.status === 200) {
                 showEventsPage();
             } else if (result.status === 401) {
@@ -201,6 +205,10 @@ const Picker = props => {
             }
         }
     };
+
+    const hideAutocomplete = () => {
+        setAutocomplete(false);
+    }
 
     return (
         <ConditionalView 
@@ -214,6 +222,7 @@ const Picker = props => {
                 dividerTitle={"Your favourite addresses"}
                 onInputChange={autocompleteInputHandler}
                 onSelect={selectAddress}
+                hideAutocomplete={hideAutocomplete}
             />
             <View style={styles.inputsContainer}>
                 <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete("from")}>
