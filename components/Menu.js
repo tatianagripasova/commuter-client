@@ -8,7 +8,7 @@ import ShowScreen from "../context/screens";
 const window = Dimensions.get('window');
 
 const Menu = props => {
-    const { setPicker, setPlaces, setEvents } = useContext(ShowScreen);
+    const { setNewEvent, setPlaces, setEvents } = useContext(ShowScreen);
     const { email, showAuth } = useContext(AuthContext);
 
     const showPlacesPage = () => {
@@ -18,7 +18,7 @@ const Menu = props => {
     };
 
     const showPickerPage = () => {
-        setPicker(true);
+        setNewEvent(true);
         setEvents(false);
         props.setMenuOpen(false);
     };

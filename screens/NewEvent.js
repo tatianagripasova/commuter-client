@@ -15,11 +15,12 @@ import Autocomplete from "../components/Autocomplete";
 import Input from "../components/Input";
 import ImageButton from "../components/ImageButton";
 import ShowScreen from "../context/screens";
+import GetPlaces from "../context/places";
 
 const GOOGLE_MAPS_APIKEY = "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4";
 const DEFAULT_DAYS = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 };
 
-const Picker = props => {
+const NewEvent = props => {
     const [fromLocation, setFromLocation] = useState({});
     const [fromCoordinates, setFromCoordinates] = useState({});
     const [toCoordinates, setToCoordinates] = useState({});
@@ -35,7 +36,8 @@ const Picker = props => {
     const [autocompleteField, setAutocompleteField] = useState(null);
 
     const { token, showAuth } = useContext(AuthContext);
-    const { setEvents, setPicker, setRefreshEvents, address } = useContext(ShowScreen);
+    const { setEvents, setNewEvent, setRefreshEvents, address } = useContext(ShowScreen);
+    const { favouritePlaces } = useContext(GetPlaces);
 
     useEffect(() => {
         setFromLocation(address);
@@ -80,7 +82,7 @@ const Picker = props => {
     const showEventsPage = () => {
         setRefreshEvents(true);
         setEvents(true);
-        setPicker(false);
+        setNewEvent(false);
     };
 
     const mapRef = useRef();
@@ -218,7 +220,11 @@ const Picker = props => {
             <Autocomplete 
                 visible={autocomplete}
                 autocompleteOptions={addressOptions}
-                defaultOptions={[]}
+                defaultOptions={favouritePlaces.map(place => ({
+                    label: place.label,
+                    description: place.formattedAddress,
+                    id: place.placeId
+                }))}
                 dividerTitle={"Your favourite addresses"}
                 onInputChange={autocompleteInputHandler}
                 onSelect={selectAddress}
@@ -363,4 +369,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Picker;
+export default NewEvent;

@@ -8,6 +8,7 @@ import Input from "../components/Input";
 import Autocomplete from "../components/Autocomplete";
 import ImageButton from "../components/ImageButton";
 import AuthContext from "../context/auth";
+import GetPlaces from "../context/places";
 import ShowScreen from "../context/screens";
 
 const Places = props => {
@@ -15,13 +16,13 @@ const Places = props => {
     const [label, setLabel] = useState("");
     const [address, setAddress] = useState({});
     const [addressOptions, setAddressOptions] = useState([]);
-    const [places, setPlaces] = useState([]);
 
     const { token, showAuth } = useContext(AuthContext);
     const { setPlaces: setPlacesWindow, setEvents } = useContext(ShowScreen);
+    const { getPlaces, favouritePlaces } = useContext(GetPlaces);
 
     useEffect(() => {
-        if (token && token !== 'none') {
+        if (token && token !== "none") {
             getPlaces();
         }
     }, [token]); 
@@ -62,23 +63,6 @@ const Places = props => {
         if(result.status === 200) {
             const data = await result.json();
             getPlaces();
-        } else if (result.status === 401) {
-            showAuth();
-        }
-    };
-
-    const getPlaces = async() => {
-        const result = await fetch("http://localhost:3000/places", {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "Auth-Token": token
-            }
-        })
-        if(result.status === 200) {
-            const places = await result.json();
-            setPlaces(places);
         } else if (result.status === 401) {
             showAuth();
         }
@@ -174,7 +158,7 @@ const Places = props => {
             <View style={styles.addressList}>
                 <ScrollView>
                     <SwipeListView
-                        data={places}
+                        data={favouritePlaces}
                         keyExtractor={item => Math.random().toString()}
                         renderItem={(place) => {
                             return (

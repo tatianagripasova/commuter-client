@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, AsyncStorage } from 'react-native';
 
-import Picker from "./screens/Picker";
+import NewEvent from "./screens/NewEvent";
 import Places from "./screens/Places";
 import Events from "./screens/Events";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
 import { getPushTokenAsync } from "./utils/notifications";
 import { Authenticate } from "react-native-expo-auth";
 import AuthContext from "./context/auth";
+import GetPlaces from "./context/places";
 import ShowScreen from "./context/screens";
 
 export default function App() {
   const [address, setAddress] = useState({});
-  const [picker, setPicker] = useState(false);
+  const [newEvent, setNewEvent] = useState(false);
   const [places, setPlaces] = useState(false);
   const [events, setEvents] = useState(true);
   const [region, setRegion] = useState(defaultRegion);
@@ -24,6 +25,8 @@ export default function App() {
   const [logins, setLogins] = useState([]);
 
   const [refreshEvents, setRefreshEvents] = useState(false);
+
+  const [favouritePlaces, setFavouritePlaces] = useState([]);
 
   useEffect(() => {
     getLocation();
@@ -77,6 +80,23 @@ export default function App() {
       setAddress(data);
     }
   };
+
+  const getPlaces = async() => {
+    const result = await fetch("http://localhost:3000/places", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Auth-Token": token
+        }
+    })
+    if(result.status === 200) {
+        const places = await result.json();
+        setFavouritePlaces(places);
+    } else if (result.status === 401) {
+        showAuth();
+    }
+};
 
   const submitAuth = async(data, route) => {
     const signUpRaw = await fetch(`http://localhost:3000/${route}`, {
@@ -135,18 +155,20 @@ export default function App() {
         enableBio={true}
       />
       <AuthContext.Provider value={{token, email, showAuth}}>
-        <ShowScreen.Provider value={{setPicker, setEvents, setPlaces, refreshEvents, setRefreshEvents, address}}>
-          <Events 
-            visible={events}
-          />
-          <Picker
-            visible={picker}
-            region={region}
-          />
-          <Places 
-            visible={places}
-            region={region}
-          />
+        <ShowScreen.Provider value={{setNewEvent, setEvents, setPlaces, refreshEvents, setRefreshEvents, address}}>
+          <GetPlaces.Provider value={{getPlaces, favouritePlaces}}>
+            <Events 
+              visible={events}
+            />
+            <NewEvent
+              visible={newEvent}
+              region={region}
+            />
+            <Places 
+              visible={places}
+              region={region}
+            />
+          </GetPlaces.Provider>
        </ShowScreen.Provider>
       </AuthContext.Provider>
     </View>
