@@ -12,6 +12,8 @@ import ImageButton from "../components/ImageButton";
 import Menu from "../components/Menu";
 import ShowScreen from "../context/screens";
 
+const SIGNIFICANT_CHANGE = 10;
+
 const Events = props => {
     const [datePicker, setDatePicker] = useState(false);
     const [eventDate, setEventDate] = useState(moment().format("MMM Do YY"));
@@ -176,37 +178,82 @@ const Events = props => {
                     />
                 </View>
                 <View style={styles.addressList}>
-                    <ScrollView>
-                        <SwipeListView
-                            closeOnRowPress={true}
-                            data={events}
-                            keyExtractor={item => item.id.toString()}
-                            renderItem={(event) => {
-                                return (
-                                <View style={styles.rowFront}>
-                                    <Text style={styles.text}>To: {event.item.fromAddress}</Text>
-                                    <Text style={styles.text}>From: {event.item.toAddress}</Text>
-                                    <Text style={styles.text}>At: {event.item.time}</Text>
-                                    <Text style={styles.text}>Estimated Time: {event.item.estimate}</Text>
-                                    {event.item.realtimeEstimate && (<Text style={styles.text}>Time In Traffic: {event.item.realtimeEstimate}</Text>)}
-                                </View>
-                            )}}
-                            renderHiddenItem={(event, rowMap) => (
-                                <View style={styles.rowBack}>
-                                <ImageButton
-                                    imageStyle={styles.cancelButtonImage}
-                                    source={require("../images/trash.png")}
-                                    onPress={() => {
-                                        deleteEvent(event.item);
-                                        rowMap[event.item.id.toString()].closeRow();
-                                    }}
-                                />
-                                </View>
-                            )}
-                            leftOpenValue={0}
-                            rightOpenValue={-75}
-                        />
-                    </ScrollView>
+                    <View style={styles.addressListContainer}>
+                        <ScrollView>
+                            <SwipeListView
+                                closeOnRowPress={true}
+                                data={events}
+                                keyExtractor={item => item.id.toString()}
+                                renderItem={(event) => {
+                                    const fromAddressArr = event.item.fromAddress.split(", ");
+                                    const toAddressArr = event.item.toAddress.split(", ");
+                                    if(fromAddressArr[fromAddressArr.length - 1] === toAddressArr[toAddressArr.length - 1]) {
+                                        fromAddressArr.pop();
+                                        toAddressArr.pop();
+                                    }
+                                    let trafficColor = "green";
+                                    if (event.item.realtimeEstimate) {
+                                        const increasePercent = (event.item.realtimeEstimate - event.item.estimate) * 100 / event.item.estimate;
+                                        if(increasePercent >= SIGNIFICANT_CHANGE) {
+                                            trafficColor = "red";
+                                        }
+                                    };
+                                    return (
+                                    <View style={styles.rowFront}>
+                                        <View style={styles.addressContainer}>
+                                            <View style={styles.arrowImage}>
+                                                <Image
+                                                    source={require("../images/arrow.png")}
+                                                />
+                                            </View>
+                                            <View style={styles.addresses}>
+                                                <Text style={styles.text}>{fromAddressArr.join(", ")}</Text>
+                                                <Text style={styles.text}>{toAddressArr.join(", ")}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.timeContainer}>
+                                            <View style={styles.arrival}>
+                                                <View style={styles.timeImage}>
+                                                    <Image
+                                                        source={require("../images/time.png")}
+                                                        style={{ width: 30, height: 30 }}
+                                                    />
+                                                </View>
+                                                <View style={styles.arrivalTime}>
+                                                    <Text style={{ ...styles.text, paddingTop: 4}}>{event.item.time}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={styles.drive}>
+                                                <View style={styles.carImage}>
+                                                    <Image
+                                                        source={require("../images/car.png")}
+                                                        style={{ width: 30, height: 30 }}
+                                                    />
+                                                </View>
+                                                <View style={styles.timeInTraffic}>
+                                                    <Text style={{ ...styles.text, color: trafficColor, paddingTop: 4 }}>{event.item.realtimeEstimate || event.item.estimate} drive</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                )}}
+                                renderHiddenItem={(event, rowMap) => (
+                                    <View style={styles.rowBack}>
+                                    <ImageButton
+                                        imageStyle={styles.cancelButtonImage}
+                                        source={require("../images/trash.png")}
+                                        onPress={() => {
+                                            deleteEvent(event.item);
+                                            rowMap[event.item.id.toString()].closeRow();
+                                        }}
+                                    />
+                                    </View>
+                                )}
+                                leftOpenValue={0}
+                                rightOpenValue={-75}
+                            />
+                        </ScrollView>
+                    </View>
                 </View>
             </SideMenu>
         </ConditionalView>
@@ -239,7 +286,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignContent: "center",
         alignItems: "center",
-        paddingTop: 22,
+        paddingTop: 30,
         paddingRight: 50
     },
     header: {
@@ -250,32 +297,67 @@ const styles = StyleSheet.create({
         flex: 1,
         alignContent: "center", 
         alignItems: "center",
-        backgroundColor: "#ffffff",
-        paddingTop: 10
+        backgroundColor: "#ffffff"
     },
     addressList: {
-        flex: 5,
+        flex: 7,
         width: "100%",
         backgroundColor: "#ffffff"
-    }, 
-    textContainer: {
-        padding: 15
+    },
+    addressContainer: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    arrowImage: {
+        flex: 1
+    },
+    addresses: {
+        flex: 10,
+        paddingLeft: 10
     },
     text: {
-        fontSize: 18
+        fontFamily: "System",
+        fontSize: 18,
+        paddingBottom: 17
+    },
+    timeContainer: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    arrival: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    timeImage: {
+        flex: 1
+    },
+    arrivalTime: {
+        flex: 3
+    },
+    drive: {
+        flex: 2,
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    carImage: {
+        flex: 1
+    },
+    timeInTraffic: {
+        flex: 6
     },
     rowFront: {
-
         paddingLeft: 15,
         backgroundColor: "#ffffff",
         borderBottomColor: "#B9B5B5",
         borderBottomWidth: 1,
-        justifyContent: "center",
         minHeight: 60,
         paddingTop: 7,
-        paddingBottom: 7
-      },
-      rowBack: {
+        paddingBottom: 7,
+    },
+    rowBack: {
         alignItems: "flex-end",
         backgroundColor: "#ffffff",
         flex: 1,
@@ -283,8 +365,8 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         borderBottomColor: "#B9B5B5",
         borderBottomWidth: 1,
-      }, 
-      cancelButtonImage: {
+    }, 
+    cancelButtonImage: {
         width: 35,
         height: 35,
         marginRight: 30

@@ -249,7 +249,7 @@ const NewEvent = props => {
             </View>
             <View style={styles.dateWrapper}>
                 <Button 
-                    title={eventTime ? eventTime : "Pick Time"} 
+                    title={eventTime ? eventTime : "Select Arrival Time"} 
                     type="clear"
                     onPress={showTimePicker} 
                 />
@@ -260,7 +260,7 @@ const NewEvent = props => {
                     onCancel={hideTimePicker}
                 />
                 <Button 
-                    title={eventDate ? eventDate : "Once"} 
+                    title={eventDate ? eventDate : "Select Date"} 
                     type="clear"
                     onPress={showDatePicker} 
                 />
@@ -270,7 +270,7 @@ const NewEvent = props => {
                     onConfirm={handleDateConfirm}
                     onCancel={hideDatePicker}
                 />
-                <Text style={styles.text}>Or Repeat:</Text>
+                <Text style={styles.text}>Or Repeat Every:</Text>
                 <WeekdayPicker
                     days={recurringDays ? recurringDays : {...DEFAULT_DAYS}}
                     onChange={selectRecurringDays}
