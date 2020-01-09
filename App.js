@@ -40,9 +40,13 @@ export default function App() {
       const token = await AsyncStorage.getItem("userToken");
       const logins = await AsyncStorage.getItem("logins");
       const email = await AsyncStorage.getItem("email");
+
+      if (logins) {
+        setLogins(JSON.parse(logins));
+      }
+
       if(token !== null) {
         setToken(token);
-        setLogins(JSON.parse(logins));
         setEmail(email);
         setAuthDialog(false);
       } else {
@@ -65,7 +69,7 @@ export default function App() {
   };
 
   const getAddressByLocation = async(region) => {
-    const result = await fetch("http://localhost:3000/location", {
+    const result = await fetch("http://commuter.guru/location", {
       method: "POST", 
       headers: {
         Accept: "application/json",
@@ -82,7 +86,7 @@ export default function App() {
   };
 
   const getPlaces = async() => {
-    const result = await fetch("http://localhost:3000/places", {
+    const result = await fetch("http://commuter.guru/places", {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -99,7 +103,7 @@ export default function App() {
 };
 
   const submitAuth = async(data, route) => {
-    const signUpRaw = await fetch(`http://localhost:3000/${route}`, {
+    const signUpRaw = await fetch(`http://commuter.guru/${route}`, {
       method: "POST", 
       headers: {
         Accept: 'application/json',
@@ -124,6 +128,7 @@ export default function App() {
       await AsyncStorage.setItem("logins", JSON.stringify(emails));
       if (data.email) {
         await AsyncStorage.setItem("email", data.email);
+        setEmail(data.email);
       }
       setAuthDialog(false);
     }

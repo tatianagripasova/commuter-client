@@ -47,7 +47,7 @@ const Places = props => {
     
     const submitPlace = async () => {
         const place = { label, address };
-        const result = await fetch("http://localhost:3000/place", {
+        const result = await fetch("http://commuter.guru/place", {
             method: "POST",
             headers: {
               Accept: "application/json",
@@ -70,7 +70,7 @@ const Places = props => {
 
     const autocompleteInputHandler = async (text) => {
         if (text.length > 1) {
-          const result = await fetch("http://localhost:3000/address", {
+          const result = await fetch("http://commuter.guru/address", {
             method: "POST",
             headers: {
               Accept: "application/json",
@@ -92,7 +92,7 @@ const Places = props => {
       };
 
     const deletePlace = async(id) => {
-        const result = await fetch(`http://localhost:3000/delete/${id}`, {
+        const result = await fetch(`http://commuter.guru/delete/${id}`, {
             method: "DELETE",
             headers: {
                 Accept: "application/json",

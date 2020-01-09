@@ -63,7 +63,7 @@ const Events = props => {
 
     const getEvents = async() => {
         const date = eventDate;
-        const result = await fetch("http://localhost:3000/events", {
+        const result = await fetch("http://commuter.guru/events", {
             method: "POST",
             headers: {
               Accept: "application/json",
@@ -95,7 +95,7 @@ const Events = props => {
     };
 
     const sendDeleteEventRequest = async (id, todayOnly = false) => {
-        const result = await fetch(`http://localhost:3000/deleteEvent/${id}`, {
+        const result = await fetch(`http://commuter.guru/deleteEvent/${id}`, {
             method: "DELETE",
             headers: {
               Accept: "application/json",

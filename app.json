@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Commuter-client",
-    "slug": "Commuter-client",
+    "name": "Commuter",
+    "slug": "Commuter",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
@@ -17,7 +17,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "description": "The Commuter app helps users to monitor traffic situation by getting push notifications.",
+    "description": "The Commuter.guru app helps users to monitor traffic situation by getting push notifications.",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -25,17 +25,18 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "guru.commuter.app",
       "supportsTablet": false,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription" : "The Commuter app uses users' location in order to populate users' default origin",
-        "NSFaceIDUsageDescription": "The Commuter app uses FaceID to authenticate registered users"
+        "NSLocationWhenInUseUsageDescription" : "The Commuter.guru app uses users' location in order to populate users' default origin",
+        "NSFaceIDUsageDescription": "The Commuter.guru app uses FaceID to authenticate registered users"
       },
       "config": {
         "googleMapsApiKey": "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4" 
       }
     },
     "android": {
-      "package": "Commuter-client",
+      "package": "guru.commuter.app",
       "config": {
           "googleMaps": {
               "apiKey": "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4"

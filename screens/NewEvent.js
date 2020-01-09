@@ -51,7 +51,7 @@ const NewEvent = props => {
         if (!_.isEmpty(fromLocation) && !_.isEmpty(toLocation)) {
             const placeIds = [fromLocation.id, toLocation.id];
             const result = await fetch(
-                `http://localhost:3000/coordinates`, {
+                `http://commuter.guru/coordinates`, {
                     method: "POST",
                     headers: {
                     Accept: "application/json",
@@ -137,7 +137,7 @@ const NewEvent = props => {
 
     const autocompleteInputHandler = async (text) => {
         if (text.length > 1) {
-          const result = await fetch("http://localhost:3000/address", {
+          const result = await fetch("http://commuter.guru/address", {
             method: "POST",
             headers: {
               Accept: "application/json",
@@ -185,7 +185,7 @@ const NewEvent = props => {
                 recurringDays,
                 utcOffset: moment().utcOffset()
             };
-            const result = await fetch("http://localhost:3000/event", {
+            const result = await fetch("http://commuter.guru/event", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
