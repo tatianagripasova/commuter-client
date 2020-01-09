@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, AsyncStorage } from 'react-native';
+import { StyleSheet, View, AsyncStorage, Text } from 'react-native';
 
 import NewEvent from "./screens/NewEvent";
 import Places from "./screens/Places";
@@ -153,7 +153,9 @@ export default function App() {
         onPinCodeRequest={submitPinCodeRequest}
         onSubmitNewPassword={submitNewPassword}
         enableBio={true}
-      />
+      >
+        <Text>LOGO</Text>
+      </Authenticate>
       <AuthContext.Provider value={{token, email, showAuth}}>
         <ShowScreen.Provider value={{setNewEvent, setEvents, setPlaces, refreshEvents, setRefreshEvents, address}}>
           <GetPlaces.Provider value={{getPlaces, favouritePlaces}}>

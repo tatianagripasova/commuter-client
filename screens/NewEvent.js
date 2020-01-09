@@ -225,7 +225,7 @@ const NewEvent = props => {
                     description: place.formattedAddress,
                     id: place.placeId
                 }))}
-                dividerTitle={"Your favourite addresses"}
+                dividerTitle={"Your Favourite Addresses"}
                 onInputChange={autocompleteInputHandler}
                 onSelect={selectAddress}
                 hideAutocomplete={hideAutocomplete}
@@ -302,7 +302,7 @@ const NewEvent = props => {
                 
             </MapView>
             </View>
-            <View style={styles.submitButton}>
+            <View style={styles.buttons}>
                 <Button 
                     title="Save"
                     type="clear"
@@ -310,6 +310,7 @@ const NewEvent = props => {
                 />
                     <ImageButton
                         imageStyle={styles.cancelButton}
+                        style={styles.cancel}
                         source={require("../images/cancel.png")}
                         onPress={showEventsPage}
                     />
@@ -357,14 +358,16 @@ const styles = StyleSheet.create({
         margin: 5,
         fontSize: 18
     }, 
-    submitButton: {
+    buttons: {
         flex: 1, 
         paddingTop: 20
     },
     cancelButton: {
         width: 30,
         height: 30,
-        paddingBottom: 30
+    },
+    cancel: {
+        paddingBottom: 18
     }
 
 });

@@ -51,7 +51,7 @@ const Autocomplete = props => {
                             )
                         })}
                         <View style={styles.dividerTitle}>
-                            <Text>{props.dividerTitle}</Text>
+                            <Text style={styles.dividerTitleText}>{props.dividerTitle}</Text>
                         </View>
                         {props.defaultOptions.map((defaultOption) => {
                             return (
@@ -61,7 +61,7 @@ const Autocomplete = props => {
                                         onPress={() => onValueSelect(defaultOption)}
                                     >
                                         <View>
-                                            <Text>{defaultOption.label}</Text>
+                                            <Text style={styles.textLabel}>{defaultOption.label}</Text>
                                             <Text>{defaultOption.description}</Text>
                                         </View>
                                     </TouchableWithoutFeedback>
@@ -97,6 +97,14 @@ const styles = StyleSheet.create({
     }, 
     dividerTitle: {
         padding: 20
+    },
+    dividerTitleText: {
+        fontFamily: "System",
+        fontSize: 18
+    },
+    textLabel: {
+        fontSize: 16, 
+        fontWeight: "bold"
     },
     optionContainer: {
         flex: 5, 

@@ -21,7 +21,12 @@ const Events = props => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const { token, showAuth } = useContext(AuthContext);
-    const { refreshEvents, setRefreshEvents } = useContext(ShowScreen);
+    const { refreshEvents, setRefreshEvents, setNewEvent, setEvents: setEventsPage } = useContext(ShowScreen);
+
+    const showNewEventPage = () => {
+        setNewEvent(true);
+        setEventsPage(false);
+    };
 
     useEffect(() => {
         if (token && token !== 'none') {
@@ -113,10 +118,10 @@ const Events = props => {
         if(recurrent) {
             Alert.alert(
                 "You are trying to delete a recurring route",
-                "My Alert Msg",
+                "",
                 [
                     {
-                        text: "Only for today",
+                        text: "Delete Only for today",
                         onPress: () => sendDeleteEventRequest(id, true)
                     },
                     {
@@ -177,8 +182,22 @@ const Events = props => {
                         onCancel={hideDatePicker}
                     />
                 </View>
-                <View style={styles.addressList}>
-                    <View style={styles.addressListContainer}>
+                <View style={{ ...styles.addressList }}>
+                    <View style={{flex: 1}}>
+                        {!events.length && (
+                            <View style={styles.emptyListContainer}>
+                                <View style={styles.addEventText}>
+                                    <Text style={styles.text}>It seems you don't have any events for this date yet.</Text>
+                                </View>
+                                <View style={styles.addEventImage}>
+                                    <ImageButton
+                                        imageStyle={styles.addButtonImage}
+                                        source={require("../images/add.png")}
+                                        onPress={showNewEventPage}
+                                    />
+                                </View>
+                            </View>
+                        )}
                         <ScrollView>
                             <SwipeListView
                                 closeOnRowPress={true}
@@ -292,6 +311,22 @@ const styles = StyleSheet.create({
     header: {
         fontFamily: "System",
         fontSize: 20
+    },
+    emptyListContainer: {
+        flex: 1,
+        alignItems: "center",
+        alignContent: "center"
+    },
+    addEventText: {
+        flex: 1,
+        padding: 20
+    },
+    addEventImage: {
+        flex: 1
+    },
+    addButtonImage: {
+        width: 50,
+        height: 50
     },
     dateWrapper: {
         flex: 1,

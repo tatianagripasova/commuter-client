@@ -17,6 +17,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "description": "The Commuter app helps users to monitor traffic situation by getting push notifications.",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -24,9 +25,21 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription" : "The Commuter app uses users' location in order to populate users' default origin",
+        "NSFaceIDUsageDescription": "The Commuter app uses FaceID to authenticate registered users"
+      },
       "config": {
         "googleMapsApiKey": "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4" 
+      }
+    },
+    "android": {
+      "package": "Commuter-client",
+      "config": {
+          "googleMaps": {
+              "apiKey": "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4"
+          }
       }
     }
   }

@@ -17,7 +17,7 @@ const Menu = props => {
         props.setMenuOpen(false);
     };
 
-    const showPickerPage = () => {
+    const showNewEventPage = () => {
         setNewEvent(true);
         setEvents(false);
         props.setMenuOpen(false);
@@ -70,7 +70,7 @@ const Menu = props => {
                         title={"Add new route"}
                         type="clear"
                         titleStyle={styles.item}
-                        onPress={showPickerPage}
+                        onPress={showNewEventPage}
                     />
                     <Button
                         title={"Log Out"}
