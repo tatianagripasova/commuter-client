@@ -4,6 +4,7 @@ import { Button } from "react-native-elements";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Appearance } from 'react-native-appearance';
 import WeekdayPicker from "react-native-weekday-picker"
 import moment from "moment";
 import _ from "lodash";
@@ -162,10 +163,8 @@ const NewEvent = props => {
         let error;
         if (_.isEmpty(fromLocation)) {
             error = "Please choose starting point";
-            
         } else if (_.isEmpty(toLocation)) {
             error = "Please choose destination";
-    
         } else if (!eventDate && !recurringDays) {
             error = "Please choose a specific date or a day";
         } else if (!eventTime) {
@@ -200,6 +199,9 @@ const NewEvent = props => {
             setFromCoordinates({});
             setToLocation({});
             setToCoordinates({});
+            setEventDate(null);
+            setEventTime(null);
+            setRecurringDays(null);
             if(result.status === 200) {
                 showEventsPage();
             } else if (result.status === 401) {
@@ -211,6 +213,10 @@ const NewEvent = props => {
     const hideAutocomplete = () => {
         setAutocomplete(false);
     }
+
+    const colorScheme = Appearance.getColorScheme();
+
+    console.log('>>>>>', colorScheme)
 
     return (
         <ConditionalView 
@@ -258,6 +264,7 @@ const NewEvent = props => {
                     mode={"time"}
                     onConfirm={handleTimeConfirm}
                     onCancel={hideTimePicker}
+                    isDarkModeEnabled={colorScheme === "dark"}
                 />
                 <Button 
                     title={eventDate ? eventDate : "Select Date"} 
@@ -269,6 +276,7 @@ const NewEvent = props => {
                     mode={"date"}
                     onConfirm={handleDateConfirm}
                     onCancel={hideDatePicker}
+                    isDarkModeEnabled={colorScheme === "dark"}
                 />
                 <Text style={styles.text}>Or Repeat Every:</Text>
                 <WeekdayPicker
@@ -279,12 +287,7 @@ const NewEvent = props => {
             </View>
             <View style={styles.mapWrapper}>
             <MapView
-                initialRegion={{
-                        latitude: 37.78825,
-                        longitude: -122.4324,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
+                initialRegion={props.region}
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
                 showsUserLocation={true} 
@@ -303,11 +306,13 @@ const NewEvent = props => {
             </MapView>
             </View>
             <View style={styles.buttons}>
-                <Button 
-                    title="Save"
-                    type="clear"
-                    onPress={submitEvent}
-                />
+                <View style={styles.saveButton}>
+                    <Button 
+                        title="Save"
+                        type="clear"
+                        onPress={submitEvent}
+                    />
+                </View>
                     <ImageButton
                         imageStyle={styles.cancelButton}
                         style={styles.cancel}
@@ -347,7 +352,7 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     mapWrapper: {
-        flex: 4, 
+        flex: 3, 
         width: "100%",
         zIndex: 10
     },
@@ -356,18 +361,20 @@ const styles = StyleSheet.create({
     },
     text: {
         margin: 5,
-        fontSize: 18
+        fontSize: 16
     }, 
     buttons: {
-        flex: 1, 
-        paddingTop: 20
+        flex: 1
+    },
+    saveButton: {
+        flex: 1
     },
     cancelButton: {
         width: 30,
-        height: 30,
+        height: 30
     },
     cancel: {
-        paddingBottom: 18
+        paddingBottom: 10
     }
 
 });

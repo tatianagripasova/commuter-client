@@ -7,6 +7,7 @@ import Events from "./screens/Events";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
 import { getPushTokenAsync } from "./utils/notifications";
 import { Authenticate } from "react-native-expo-auth";
+import { AppearanceProvider } from 'react-native-appearance';
 import AuthContext from "./context/auth";
 import GetPlaces from "./context/places";
 import ShowScreen from "./context/screens";
@@ -148,37 +149,39 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <Authenticate
-        visible={authDialog}
-        onLogin={submitSignIn} 
-        onSignUp={submitSignUp}
-        onBioLogin={submitBioLogin}
-        logins={logins}
-        onPinCodeRequest={submitPinCodeRequest}
-        onSubmitNewPassword={submitNewPassword}
-        enableBio={true}
-      >
-        <Text>LOGO</Text>
-      </Authenticate>
-      <AuthContext.Provider value={{token, email, showAuth}}>
-        <ShowScreen.Provider value={{setNewEvent, setEvents, setPlaces, refreshEvents, setRefreshEvents, address}}>
-          <GetPlaces.Provider value={{getPlaces, favouritePlaces}}>
-            <Events 
-              visible={events}
-            />
-            <NewEvent
-              visible={newEvent}
-              region={region}
-            />
-            <Places 
-              visible={places}
-              region={region}
-            />
-          </GetPlaces.Provider>
-       </ShowScreen.Provider>
-      </AuthContext.Provider>
-    </View>
+    <AppearanceProvider>
+      <View style={styles.container}>
+        <Authenticate
+          visible={authDialog}
+          onLogin={submitSignIn} 
+          onSignUp={submitSignUp}
+          onBioLogin={submitBioLogin}
+          logins={logins}
+          onPinCodeRequest={submitPinCodeRequest}
+          onSubmitNewPassword={submitNewPassword}
+          enableBio={true}
+        >
+          <Text>LOGO</Text>
+        </Authenticate>
+        <AuthContext.Provider value={{token, email, showAuth}}>
+          <ShowScreen.Provider value={{setNewEvent, setEvents, setPlaces, refreshEvents, setRefreshEvents, address}}>
+            <GetPlaces.Provider value={{getPlaces, favouritePlaces}}>
+              <Events 
+                visible={events}
+              />
+              <NewEvent
+                visible={newEvent}
+                region={region}
+              />
+              <Places 
+                visible={places}
+                region={region}
+              />
+            </GetPlaces.Provider>
+        </ShowScreen.Provider>
+        </AuthContext.Provider>
+      </View>
+    </AppearanceProvider>
   );
 };
 
@@ -189,6 +192,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center", 
     fontFamily: "System",
-    fontSize: 18
+    fontSize: 16
   }
 });

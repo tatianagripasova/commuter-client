@@ -25,6 +25,7 @@
       "**/*"
     ],
     "ios": {
+      "userInterfaceStyle": "light",
       "bundleIdentifier": "guru.commuter.app",
       "supportsTablet": false,
       "infoPlist": {

@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     },
     header: {
         fontFamily: "System",
-        fontSize: 20
+        fontSize: 18
     },
     inputsContainer: {
         flex: 1,
@@ -234,11 +234,11 @@ const styles = StyleSheet.create({
         padding: 15
     },
     textLabel: {
-        fontSize: 18, 
+        fontSize: 16, 
         fontWeight: "bold"
     },
     textAddress: {
-        fontSize: 18
+        fontSize: 16
     },
     rowFront: {
         paddingLeft: 10,

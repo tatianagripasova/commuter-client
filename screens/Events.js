@@ -12,7 +12,7 @@ import ImageButton from "../components/ImageButton";
 import Menu from "../components/Menu";
 import ShowScreen from "../context/screens";
 
-const SIGNIFICANT_CHANGE = 10;
+const SIGNIFICANT_CHANGE = 20;
 
 const Events = props => {
     const [datePicker, setDatePicker] = useState(false);
@@ -85,7 +85,8 @@ const Events = props => {
                     time: moment(event.time, "H:mm:ss").add(moment().utcOffset(), "minutes").format("hh:mm A"),
                     estimate: moment.duration(event.estimatedTime, "seconds").humanize(),
                     realtimeEstimate: event.realTime ? moment.duration(event.realTime, "seconds").humanize() : null,
-                    recurrent: event[`every${moment(eventDate, "MMM Do YY").format("dddd")}`]
+                    recurrent: event[`every${moment(eventDate, "MMM Do YY").format("dddd")}`],
+                    increasePercent: (event.realTime - event.estimatedTime) * 100 / event.estimatedTime
                 }
             ));
             setEvents(fields);
@@ -171,7 +172,8 @@ const Events = props => {
                 </View>
                 <View style={styles.dateWrapper}>
                     <Button 
-                        title={eventDate} 
+                        title={eventDate}
+                        titleStyle={{ fontSize: 16 }}
                         type="clear"
                         onPress={showDatePicker} 
                     />
@@ -182,19 +184,12 @@ const Events = props => {
                         onCancel={hideDatePicker}
                     />
                 </View>
-                <View style={{ ...styles.addressList }}>
+                <View style={styles.eventList}>
                     <View style={{flex: 1}}>
                         {!events.length && (
                             <View style={styles.emptyListContainer}>
                                 <View style={styles.addEventText}>
                                     <Text style={styles.text}>It seems you don't have any events for this date yet.</Text>
-                                </View>
-                                <View style={styles.addEventImage}>
-                                    <ImageButton
-                                        imageStyle={styles.addButtonImage}
-                                        source={require("../images/add.png")}
-                                        onPress={showNewEventPage}
-                                    />
                                 </View>
                             </View>
                         )}
@@ -211,9 +206,9 @@ const Events = props => {
                                         toAddressArr.pop();
                                     }
                                     let trafficColor = "green";
+                                    console.log('>>>>', event.item);
                                     if (event.item.realtimeEstimate) {
-                                        const increasePercent = (event.item.realtimeEstimate - event.item.estimate) * 100 / event.item.estimate;
-                                        if(increasePercent >= SIGNIFICANT_CHANGE) {
+                                        if(event.item.increasePercent >= SIGNIFICANT_CHANGE) {
                                             trafficColor = "red";
                                         }
                                     };
@@ -235,7 +230,7 @@ const Events = props => {
                                                 <View style={styles.timeImage}>
                                                     <Image
                                                         source={require("../images/time.png")}
-                                                        style={{ width: 30, height: 30 }}
+                                                        style={{ width: 25, height: 25 }}
                                                     />
                                                 </View>
                                                 <View style={styles.arrivalTime}>
@@ -246,7 +241,7 @@ const Events = props => {
                                                 <View style={styles.carImage}>
                                                     <Image
                                                         source={require("../images/car.png")}
-                                                        style={{ width: 30, height: 30 }}
+                                                        style={{ width: 25, height: 25 }}
                                                     />
                                                 </View>
                                                 <View style={styles.timeInTraffic}>
@@ -272,6 +267,15 @@ const Events = props => {
                                 rightOpenValue={-75}
                             />
                         </ScrollView>
+                    </View>
+                </View>
+                <View style={styles.addNewEvent}>
+                    <View style={styles.addEventImage}>
+                        <ImageButton
+                            imageStyle={styles.addButtonImage}
+                            source={require("../images/add.png")}
+                            onPress={showNewEventPage}
+                        />
                     </View>
                 </View>
             </SideMenu>
@@ -310,7 +314,7 @@ const styles = StyleSheet.create({
     },
     header: {
         fontFamily: "System",
-        fontSize: 20
+        fontSize: 18
     },
     emptyListContainer: {
         flex: 1,
@@ -334,7 +338,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#ffffff"
     },
-    addressList: {
+    eventList: {
         flex: 7,
         width: "100%",
         backgroundColor: "#ffffff"
@@ -353,7 +357,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontFamily: "System",
-        fontSize: 18,
+        fontSize: 16,
         paddingBottom: 17
     },
     timeContainer: {
@@ -367,10 +371,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     timeImage: {
-        flex: 1
+        flex: 1,
     },
     arrivalTime: {
-        flex: 3
+        flex: 2
     },
     drive: {
         flex: 2,
@@ -405,6 +409,9 @@ const styles = StyleSheet.create({
         width: 35,
         height: 35,
         marginRight: 30
+    },
+    addNewEvent: {
+        flex: 2
     }
 });
 

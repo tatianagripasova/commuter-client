@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     email: {
         paddingTop: 5,
         fontFamily: "System",
-        fontSize: 18
+        fontSize: 16
     },
     menuButton: {
         flex: 1,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     },
     item: {
         fontFamily: "System",
-        fontSize: 18
+        fontSize: 16
     }
   });
 
