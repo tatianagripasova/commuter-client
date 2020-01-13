@@ -204,6 +204,7 @@ const NewEvent = props => {
             setEventDate(null);
             setEventTime(null);
             setRecurringDays(null);
+            setAlwaysNotify(false);
             if(result.status === 200) {
                 showEventsPage();
             } else if (result.status === 401) {
@@ -363,7 +364,8 @@ const styles = StyleSheet.create({
     dateWrapper: {
         flex: 2,
         alignContent: "center", 
-        alignItems: "center"
+        alignItems: "center",
+        paddingBottom: 10
     },
     mapWrapper: {
         flex: 3, 
