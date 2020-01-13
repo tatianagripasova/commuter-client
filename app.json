@@ -25,13 +25,12 @@
       "**/*"
     ],
     "ios": {
-      "userInterfaceStyle": "light",
+      "userInterfaceStyle": "automatic",
       "bundleIdentifier": "guru.commuter.app",
       "supportsTablet": false,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription" : "The Commuter.guru app uses users' location in order to populate users' default origin",
-        "NSFaceIDUsageDescription": "The Commuter.guru app uses FaceID to authenticate registered users",
-        "UIUserInterfaceStyle": "Light"
+        "NSFaceIDUsageDescription": "The Commuter.guru app uses FaceID to authenticate registered users"
       },
       "config": {
         "googleMapsApiKey": "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4" 

@@ -7,7 +7,7 @@ import Events from "./screens/Events";
 import { defaultRegion, getLocationAsync } from "./utils/geolocation";
 import { getPushTokenAsync } from "./utils/notifications";
 import { Authenticate } from "react-native-expo-auth";
-import { AppearanceProvider } from 'react-native-appearance';
+import { Appearance } from 'react-native-appearance';
 import AuthContext from "./context/auth";
 import GetPlaces from "./context/places";
 import ShowScreen from "./context/screens";
@@ -28,11 +28,13 @@ export default function App() {
   const [refreshEvents, setRefreshEvents] = useState(false);
 
   const [favouritePlaces, setFavouritePlaces] = useState([]);
-
+  const [dark, setDark] = useState(false);
+ 
   useEffect(() => {
     getLocation();
     getPushToken();
     getTokenAndEmailFromStorage();
+    setDark(Appearance.getColorScheme() === "dark");
     // AsyncStorage.clear();
   }, []);
 
@@ -149,7 +151,6 @@ export default function App() {
   };
 
   return (
-    <AppearanceProvider>
       <View style={styles.container}>
         <Authenticate
           visible={authDialog}
@@ -164,7 +165,7 @@ export default function App() {
           <Text>LOGO</Text>
         </Authenticate>
         <AuthContext.Provider value={{token, email, showAuth}}>
-          <ShowScreen.Provider value={{setNewEvent, setEvents, setPlaces, refreshEvents, setRefreshEvents, address}}>
+          <ShowScreen.Provider value={{setNewEvent, setEvents, setPlaces, refreshEvents, setRefreshEvents, address, dark}}>
             <GetPlaces.Provider value={{getPlaces, favouritePlaces}}>
               <Events 
                 visible={events}
@@ -181,7 +182,6 @@ export default function App() {
         </ShowScreen.Provider>
         </AuthContext.Provider>
       </View>
-    </AppearanceProvider>
   );
 };
 

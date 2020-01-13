@@ -21,7 +21,7 @@ const Events = props => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const { token, showAuth } = useContext(AuthContext);
-    const { refreshEvents, setRefreshEvents, setNewEvent, setEvents: setEventsPage } = useContext(ShowScreen);
+    const { refreshEvents, setRefreshEvents, setNewEvent, setEvents: setEventsPage, dark } = useContext(ShowScreen);
 
     const showNewEventPage = () => {
         setNewEvent(true);
@@ -182,6 +182,7 @@ const Events = props => {
                         mode={"date"}
                         onConfirm={handleDateConfirm}
                         onCancel={hideDatePicker}
+                        isDarkModeEnabled={dark}
                     />
                 </View>
                 <View style={styles.eventList}>

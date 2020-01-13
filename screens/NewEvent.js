@@ -10,7 +10,6 @@ import WeekdayPicker from "react-native-weekday-picker"
 import moment from "moment";
 import _ from "lodash";
 
-
 import ConditionalView from "../components/ConditionalView";
 import AuthContext from "../context/auth";
 import Autocomplete from "../components/Autocomplete";
@@ -39,7 +38,7 @@ const NewEvent = props => {
     const [autocompleteField, setAutocompleteField] = useState(null);
 
     const { token, showAuth } = useContext(AuthContext);
-    const { setEvents, setNewEvent, setRefreshEvents, address } = useContext(ShowScreen);
+    const { setEvents, setNewEvent, setRefreshEvents, address, dark } = useContext(ShowScreen);
     const { favouritePlaces } = useContext(GetPlaces);
 
     useEffect(() => {
@@ -221,10 +220,6 @@ const NewEvent = props => {
         setAlwaysNotify(!alwaysNotify);
     };
 
-    const colorScheme = Appearance.getColorScheme();
-
-    console.log('>>>>>', colorScheme)
-
     return (
         <ConditionalView 
             visible={props.visible}
@@ -271,7 +266,7 @@ const NewEvent = props => {
                     mode={"time"}
                     onConfirm={handleTimeConfirm}
                     onCancel={hideTimePicker}
-                    isDarkModeEnabled={colorScheme === "dark"}
+                    isDarkModeEnabled={dark}
                 />
                 <Button 
                     title={eventDate ? eventDate : "Select Date"} 
@@ -283,7 +278,7 @@ const NewEvent = props => {
                     mode={"date"}
                     onConfirm={handleDateConfirm}
                     onCancel={hideDatePicker}
-                    isDarkModeEnabled={colorScheme === "dark"}
+                    isDarkModeEnabled={dark}
                 />
                 <Text style={styles.text}>Or Repeat Every:</Text>
                 <WeekdayPicker
