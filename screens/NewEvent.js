@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import { Button } from "react-native-elements";
+import { CheckBox } from "react-native-elements";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -32,6 +33,7 @@ const NewEvent = props => {
     const [eventTime, setEventTime] = useState(null);
     const [eventDate, setEventDate] = useState(null);
     const [recurringDays, setRecurringDays] = useState(null);
+    const [alwaysNotify, setAlwaysNotify]= useState(false);
 
     const [addressOptions, setAddressOptions] = useState([]);
     const [autocompleteField, setAutocompleteField] = useState(null);
@@ -182,6 +184,7 @@ const NewEvent = props => {
                 eventTime, 
                 eventDate, 
                 recurringDays,
+                alwaysNotify,
                 utcOffset: moment().utcOffset()
             };
             const result = await fetch("http://commuter.guru/event", {
@@ -212,7 +215,11 @@ const NewEvent = props => {
 
     const hideAutocomplete = () => {
         setAutocomplete(false);
-    }
+    };
+
+    const alwaysNotifyHandler = () => {
+        setAlwaysNotify(!alwaysNotify);
+    };
 
     const colorScheme = Appearance.getColorScheme();
 
@@ -283,6 +290,18 @@ const NewEvent = props => {
                     days={recurringDays ? recurringDays : {...DEFAULT_DAYS}}
                     onChange={selectRecurringDays}
                     style={styles.dayStyle}
+                />
+                <CheckBox
+                    title="Always Notify Me About This Event"
+                    iconType="feather"
+                    iconLeft
+                    checkedIcon="check-square"
+                    uncheckedIcon="square"
+                    containerStyle={{ borderWidth: 0, backgroundColor: "white" }}
+                    textStyle={{ fontWeight: "100" }}
+                    titleProps={{ style: {color:"black", fontSize:16, fontFamily:"System", paddingLeft: 10 }} }
+                    checked={alwaysNotify}
+                    onPress={alwaysNotifyHandler}
                 />
             </View>
             <View style={styles.mapWrapper}>

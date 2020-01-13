@@ -118,15 +118,15 @@ const Events = props => {
     const deleteEvent = async({id, recurrent}) => {
         if(recurrent) {
             Alert.alert(
-                "You are trying to delete a recurring route",
+                "You Are Trying to Delete a Recurring Route",
                 "",
                 [
                     {
-                        text: "Delete Only for today",
+                        text: "Delete Only for Today",
                         onPress: () => sendDeleteEventRequest(id, true)
                     },
                     {
-                        text: "Remove this event completely", 
+                        text: "Remove This Event Completely", 
                         onPress: () => sendDeleteEventRequest(id)
                     },
                     {
@@ -185,89 +185,86 @@ const Events = props => {
                     />
                 </View>
                 <View style={styles.eventList}>
-                    <View style={{flex: 1}}>
-                        {!events.length && (
-                            <View style={styles.emptyListContainer}>
-                                <View style={styles.addEventText}>
-                                    <Text style={styles.text}>It seems you don't have any events for this date yet.</Text>
-                                </View>
+                    {!events.length && (
+                        <View style={styles.emptyListContainer}>
+                            <View style={styles.addEventText}>
+                                <Text style={styles.text}>It seems you don't have any events for this date yet.</Text>
                             </View>
-                        )}
-                        <ScrollView>
-                            <SwipeListView
-                                closeOnRowPress={true}
-                                data={events}
-                                keyExtractor={item => item.id.toString()}
-                                renderItem={(event) => {
-                                    const fromAddressArr = event.item.fromAddress.split(", ");
-                                    const toAddressArr = event.item.toAddress.split(", ");
-                                    if(fromAddressArr[fromAddressArr.length - 1] === toAddressArr[toAddressArr.length - 1]) {
-                                        fromAddressArr.pop();
-                                        toAddressArr.pop();
+                        </View>
+                    )}
+                    <ScrollView>
+                        <SwipeListView
+                            closeOnRowPress={true}
+                            data={events}
+                            keyExtractor={item => item.id.toString()}
+                            renderItem={(event) => {
+                                const fromAddressArr = event.item.fromAddress.split(", ");
+                                const toAddressArr = event.item.toAddress.split(", ");
+                                if(fromAddressArr[fromAddressArr.length - 1] === toAddressArr[toAddressArr.length - 1]) {
+                                    fromAddressArr.pop();
+                                    toAddressArr.pop();
+                                }
+                                let trafficColor = "green";
+                                if (event.item.realtimeEstimate) {
+                                    if(event.item.increasePercent >= SIGNIFICANT_CHANGE) {
+                                        trafficColor = "red";
                                     }
-                                    let trafficColor = "green";
-                                    console.log('>>>>', event.item);
-                                    if (event.item.realtimeEstimate) {
-                                        if(event.item.increasePercent >= SIGNIFICANT_CHANGE) {
-                                            trafficColor = "red";
-                                        }
-                                    };
-                                    return (
-                                    <View style={styles.rowFront}>
-                                        <View style={styles.addressContainer}>
-                                            <View style={styles.arrowImage}>
+                                };
+                                return (
+                                <View style={styles.rowFront}>
+                                    <View style={styles.addressContainer}>
+                                        <View style={styles.arrowImage}>
+                                            <Image
+                                                source={require("../images/arrow.png")}
+                                            />
+                                        </View>
+                                        <View style={styles.addresses}>
+                                            <Text style={styles.text}>{fromAddressArr.join(", ")}</Text>
+                                            <Text style={styles.text}>{toAddressArr.join(", ")}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.timeContainer}>
+                                        <View style={styles.arrival}>
+                                            <View style={styles.timeImage}>
                                                 <Image
-                                                    source={require("../images/arrow.png")}
+                                                    source={require("../images/time.png")}
+                                                    style={{ width: 25, height: 25 }}
                                                 />
                                             </View>
-                                            <View style={styles.addresses}>
-                                                <Text style={styles.text}>{fromAddressArr.join(", ")}</Text>
-                                                <Text style={styles.text}>{toAddressArr.join(", ")}</Text>
+                                            <View style={styles.arrivalTime}>
+                                                <Text style={{ ...styles.text, paddingTop: 4}}>{event.item.time}</Text>
                                             </View>
                                         </View>
-                                        <View style={styles.timeContainer}>
-                                            <View style={styles.arrival}>
-                                                <View style={styles.timeImage}>
-                                                    <Image
-                                                        source={require("../images/time.png")}
-                                                        style={{ width: 25, height: 25 }}
-                                                    />
-                                                </View>
-                                                <View style={styles.arrivalTime}>
-                                                    <Text style={{ ...styles.text, paddingTop: 4}}>{event.item.time}</Text>
-                                                </View>
+                                        <View style={styles.drive}>
+                                            <View style={styles.carImage}>
+                                                <Image
+                                                    source={require("../images/car.png")}
+                                                    style={{ width: 25, height: 25 }}
+                                                />
                                             </View>
-                                            <View style={styles.drive}>
-                                                <View style={styles.carImage}>
-                                                    <Image
-                                                        source={require("../images/car.png")}
-                                                        style={{ width: 25, height: 25 }}
-                                                    />
-                                                </View>
-                                                <View style={styles.timeInTraffic}>
-                                                    <Text style={{ ...styles.text, color: trafficColor, paddingTop: 4 }}>{event.item.realtimeEstimate || event.item.estimate} drive</Text>
-                                                </View>
+                                            <View style={styles.timeInTraffic}>
+                                                <Text style={{ ...styles.text, color: trafficColor, paddingTop: 4 }}>{event.item.realtimeEstimate || event.item.estimate} drive</Text>
                                             </View>
                                         </View>
                                     </View>
-                                )}}
-                                renderHiddenItem={(event, rowMap) => (
-                                    <View style={styles.rowBack}>
-                                    <ImageButton
-                                        imageStyle={styles.cancelButtonImage}
-                                        source={require("../images/trash.png")}
-                                        onPress={() => {
-                                            deleteEvent(event.item);
-                                            rowMap[event.item.id.toString()].closeRow();
-                                        }}
-                                    />
-                                    </View>
-                                )}
-                                leftOpenValue={0}
-                                rightOpenValue={-75}
-                            />
-                        </ScrollView>
-                    </View>
+                                </View>
+                            )}}
+                            renderHiddenItem={(event, rowMap) => (
+                                <View style={styles.rowBack}>
+                                <ImageButton
+                                    imageStyle={styles.cancelButtonImage}
+                                    source={require("../images/trash.png")}
+                                    onPress={() => {
+                                        deleteEvent(event.item);
+                                        rowMap[event.item.id.toString()].closeRow();
+                                    }}
+                                />
+                                </View>
+                            )}
+                            leftOpenValue={0}
+                            rightOpenValue={-75}
+                        />
+                    </ScrollView>
                 </View>
                 <View style={styles.addNewEvent}>
                     <View style={styles.addEventImage}>
@@ -341,6 +338,7 @@ const styles = StyleSheet.create({
     eventList: {
         flex: 7,
         width: "100%",
+        paddingLeft: 10,
         backgroundColor: "#ffffff"
     },
     addressContainer: {

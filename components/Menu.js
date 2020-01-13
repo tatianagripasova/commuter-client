@@ -67,7 +67,7 @@ const Menu = props => {
                         onPress={showPlacesPage}
                     />
                     <Button
-                        title={"Add new route"}
+                        title={"Add New Route"}
                         type="clear"
                         titleStyle={styles.item}
                         onPress={showNewEventPage}
