@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Dimensions } from "react-native";
 import Modal from "react-native-modal";
 import { Button } from "react-native-elements";
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -10,6 +10,8 @@ import ImageButton from "../components/ImageButton";
 import AuthContext from "../context/auth";
 import GetPlaces from "../context/places";
 import ShowScreen from "../context/screens";
+
+const height = Math.round(Dimensions.get('window').height) - 50;
 
 const Places = props => {
     const [autocomplete, setAutocomplete] = useState(false);
@@ -119,75 +121,77 @@ const Places = props => {
             backdropOpacity={1} 
             isVisible={props.visible}
         >   
-            <View style={styles.headerContainer}>
-                <Text style={styles.header}> Your Favourite Places</Text>
-            </View>
-            <Autocomplete 
-                visible={autocomplete}
-                autocompleteOptions={addressOptions}
-                defaultOptions={[]}
-                onInputChange={autocompleteInputHandler}
-                onSelect={selectAddress}
-                hideAutocomplete={hideAutocomplete}
-            />
-            <View style={styles.inputsContainer}>
-                <View style={styles.inputWrapper}>
-                    <Input
-                        style={styles.inputLabel}
-                        value={label}
-                        placeholder={"Home"}
-                        onChangeText={labelHandler}
-                    />
+        
+                <View style={styles.headerContainer}>
+                    <Text style={styles.header}> Your Favourite Places</Text>
                 </View>
-                <TouchableOpacity style={styles.inputWrapper} onPress={showAutocomplete}>
-                    <Input
-                        style={styles.inputAddress}
-                        value={address.description}
-                        placeholder={"Address"}
-                        pointerEvents={"none"}
-                    />
-                </TouchableOpacity>
-                <View style={styles.addButton}>
-                    <Button
-                        title={"Add Place"} 
-                        type="clear"
-                        onPress={submitPlace} 
-                    />
+                <Autocomplete 
+                    visible={autocomplete}
+                    autocompleteOptions={addressOptions}
+                    defaultOptions={[]}
+                    onInputChange={autocompleteInputHandler}
+                    onSelect={selectAddress}
+                    hideAutocomplete={hideAutocomplete}
+                />
+                <View style={styles.inputsContainer}>
+                    <View style={styles.inputWrapper}>
+                        <Input
+                            style={styles.inputLabel}
+                            value={label}
+                            placeholder={"Home"}
+                            onChangeText={labelHandler}
+                        />
+                    </View>
+                    <TouchableOpacity style={styles.inputWrapper} onPress={showAutocomplete}>
+                        <Input
+                            style={styles.inputAddress}
+                            value={address.description}
+                            placeholder={"Address"}
+                            pointerEvents={"none"}
+                        />
+                    </TouchableOpacity>
+                    <View style={styles.addButton}>
+                        <Button
+                            title={"Add Place"} 
+                            type="clear"
+                            onPress={submitPlace} 
+                        />
+                    </View>
                 </View>
-            </View>
-            <View style={styles.addressList}>
-                <ScrollView>
-                    <SwipeListView
-                        data={favouritePlaces}
-                        keyExtractor={item => Math.random().toString()}
-                        renderItem={(place) => {
-                            return (
-                            <View style={styles.rowFront}>
-                                {place.item.label && (<Text style={styles.textLabel}>{place.item.label}</Text>)}
-                                <Text style={styles.textAddress}>{place.item.formattedAddress}</Text>
-                            </View>
-                        )}}
-                        renderHiddenItem={(place) => (
-                            <View style={styles.rowBack}>
-                            <ImageButton
-                                imageStyle={styles.cancelButtonImage}
-                                source={require("../images/trash.png")}
-                                onPress={() => deletePlace(place.item.id)}
-                            />
-                            </View>
-                        )}
-                        leftOpenValue={0}
-                        rightOpenValue={-75}
-                    />
-                </ScrollView>
-                <View>
-                    <ImageButton
-                        imageStyle={styles.cancelButton}
-                        source={require("../images/cancel.png")}
-                        onPress={showEventsPage}
-                    />
+                <View style={styles.addressList}>
+                    <ScrollView>
+                        <SwipeListView
+                            data={favouritePlaces}
+                            keyExtractor={item => Math.random().toString()}
+                            renderItem={(place) => {
+                                return (
+                                <View style={styles.rowFront}>
+                                    {place.item.label && (<Text style={styles.textLabel}>{place.item.label}</Text>)}
+                                    <Text style={styles.textAddress}>{place.item.formattedAddress}</Text>
+                                </View>
+                            )}}
+                            renderHiddenItem={(place) => (
+                                <View style={styles.rowBack}>
+                                <ImageButton
+                                    imageStyle={styles.cancelButtonImage}
+                                    source={require("../images/trash.png")}
+                                    onPress={() => deletePlace(place.item.id)}
+                                />
+                                </View>
+                            )}
+                            leftOpenValue={0}
+                            rightOpenValue={-75}
+                        />
+                    </ScrollView>
+                    <View>
+                        <ImageButton
+                            imageStyle={styles.cancelButton}
+                            source={require("../images/cancel.png")}
+                            onPress={showEventsPage}
+                        />
+                    </View>
                 </View>
-            </View>
+       
         </Modal>
     )
 };
@@ -196,7 +200,9 @@ const styles = StyleSheet.create({
     modal: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        minHeight: height,
+        height: height
     }, 
     headerContainer: {
         marginTop: 30
