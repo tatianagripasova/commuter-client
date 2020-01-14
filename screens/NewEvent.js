@@ -241,19 +241,22 @@ const NewEvent = props => {
             />
             <View style={styles.inputsContainer}>
                 <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete("from")}>
-                    <Input
-                        style={styles.inputFrom}
-                        value={fromLocation.description}
-                        pointerEvents={"none"}
-                    />
+                    <View pointerEvents={"none"}>
+                        <Input
+                            style={styles.inputFrom}
+                            value={fromLocation.description}
+                        />
+                    </View>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.inputWrapper} onPress={() => showAutocomplete("to")}>
-                    <Input
-                        style={styles.inputTo}
-                        value={toLocation.description}
-                        placeholder={"where"}
-                        pointerEvents={"none"}
-                    />
+                    <View pointerEvents={"none"}>
+                        <Input
+                            style={styles.inputTo}
+                            value={toLocation.description}
+                            placeholder={"where"}
+                            pointerEvents={"none"}
+                        />
+                    </View>
                 </TouchableOpacity>
             </View>
             <View style={styles.dateWrapper}>

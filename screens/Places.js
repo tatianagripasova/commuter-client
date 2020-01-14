@@ -11,7 +11,7 @@ import AuthContext from "../context/auth";
 import GetPlaces from "../context/places";
 import ShowScreen from "../context/screens";
 
-const height = Math.round(Dimensions.get('window').height) - 50;
+const height = Math.round(Dimensions.get('window').height);
 
 const Places = props => {
     const [autocomplete, setAutocomplete] = useState(false);
@@ -143,12 +143,13 @@ const Places = props => {
                         />
                     </View>
                     <TouchableOpacity style={styles.inputWrapper} onPress={showAutocomplete}>
-                        <Input
-                            style={styles.inputAddress}
-                            value={address.description}
-                            placeholder={"Address"}
-                            pointerEvents={"none"}
-                        />
+                        <View pointerEvents={"none"}>
+                            <Input
+                                style={styles.inputAddress}
+                                value={address.description}
+                                placeholder={"Address"}
+                            />
+                        </View>
                     </TouchableOpacity>
                     <View style={styles.addButton}>
                         <Button
@@ -228,6 +229,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10
     },
     addButton: {
+        flex: 1,
         paddingTop: 15
     },
     addressList: {
