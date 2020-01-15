@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Alert, Dimensions } from "react-native";
 import { Button } from "react-native-elements";
 import { CheckBox } from "react-native-elements";
+import Spinner from "react-native-loading-spinner-overlay";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -20,6 +21,8 @@ import GetPlaces from "../context/places";
 const GOOGLE_MAPS_APIKEY = "AIzaSyCa_RJAP1ZYeIiBcl-KvvuFW6IuJwTAGb4";
 const DEFAULT_DAYS = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 };
 
+const height = Math.round(Dimensions.get('window').height);
+
 const NewEvent = props => {
     const [fromLocation, setFromLocation] = useState({});
     const [fromCoordinates, setFromCoordinates] = useState({});
@@ -32,6 +35,7 @@ const NewEvent = props => {
     const [eventDate, setEventDate] = useState(null);
     const [recurringDays, setRecurringDays] = useState(null);
     const [alwaysNotify, setAlwaysNotify]= useState(false);
+    const [spinner, setSpinner] = useState(false);
 
     const [addressOptions, setAddressOptions] = useState([]);
     const [autocompleteField, setAutocompleteField] = useState(null);
@@ -187,7 +191,7 @@ const NewEvent = props => {
                 alwaysNotify,
                 utcOffset: moment().utcOffset()
             };
-            // show wait screen
+            setSpinner(true);
             const result = await fetch("http://commuter.guru/event", {
                 method: "POST",
                 headers: {
@@ -199,7 +203,7 @@ const NewEvent = props => {
                     ...results
                 })
             });
-            // hide wait screen
+            setSpinner(false);
             setFromLocation(address);
             setFromCoordinates({});
             setToLocation({});
@@ -228,7 +232,13 @@ const NewEvent = props => {
         <ConditionalView 
             visible={props.visible}
             style={styles.conditionalView}
-        >
+        >   
+            <Spinner
+                visible={spinner}
+                textContent={"Saving..."}
+                textStyle={styles.spinnerTextStyle}
+                overlayColor={"rgba(0, 0, 0, 0.75)"}
+            />
             <Autocomplete 
                 visible={autocomplete}
                 autocompleteOptions={addressOptions}
@@ -261,12 +271,11 @@ const NewEvent = props => {
                         />
                     </View>
                 </TouchableOpacity>
-            </View>
-            <View style={styles.dateWrapper}>
                 <Button 
                     title={eventTime ? eventTime : "Select Arrival Time"} 
                     type="clear"
-                    onPress={showTimePicker} 
+                    onPress={showTimePicker}
+                    style={styles.arrivalTimeButton}
                 />
                 <DateTimePickerModal
                     isVisible={timePicker}
@@ -323,7 +332,6 @@ const NewEvent = props => {
                         strokeWidth={3}
                     />
                 )}
-                
             </MapView>
             </View>
             <View style={styles.buttons}>
@@ -352,11 +360,16 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         width: "100%"
-    }, 
+    },
+    spinnerTextStyle: {
+        color: "#CCCCCC",
+        fontFamily: "System",
+        fontSize: 18
+    },
     inputsContainer: {
-        flex: 3,
+        flex: 4,
         alignItems: "center",
-        width: "80%"
+        width: "90%"
     },
     inputWrapper: {
         width: "100%"
@@ -369,14 +382,11 @@ const styles = StyleSheet.create({
     inputTo: {
         paddingLeft: 10
     },
-    dateWrapper: {
-        flex: 3,
-        alignContent: "center", 
-        alignItems: "center",
-        paddingBottom: 10
+    arrivalTimeButton: {
+        marginTop: 20
     },
     mapWrapper: {
-        flex: 3, 
+        flex: height < 700 ? 2 : 3, 
         width: "100%",
         zIndex: 10
     },

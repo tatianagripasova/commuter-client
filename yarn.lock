@@ -4317,6 +4317,13 @@ react-native-expo-auth@^0.0.8:
     prop-types "^15.7.2"
     tcomb-form-native "^0.6.20"
 
+react-native-loading-spinner-overlay@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-loading-spinner-overlay/-/react-native-loading-spinner-overlay-1.0.1.tgz#07f85a072b6f7d05b8749668cd626df4cc330347"
+  integrity sha512-njZZWs+cgyq6Ni7tkYEowMmuAuHVljuH4CqTWA0plNOfSzZhEcrW209y7WcgHjRWz0RvvEYF5oWGT8DWtTq8bA==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-native-maps-directions@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/react-native-maps-directions/-/react-native-maps-directions-1.7.3.tgz#cb182e87e30427816b47dea2f9f88f8f40de3b83"
