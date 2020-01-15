@@ -184,7 +184,7 @@ const Places = props => {
                             rightOpenValue={-75}
                         />
                     </ScrollView>
-                    <View>
+                    <View style={styles.cancel}>
                         <ImageButton
                             imageStyle={styles.cancelButton}
                             source={require("../images/cancel.png")}
@@ -266,17 +266,20 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         borderBottomColor: "#B9B5B5",
         borderBottomWidth: 1,
-      }, 
+      },
       cancelButtonImage: {
         width: 35,
         height: 35,
         marginRight: 30
     },
+    cancel: {
+        flex: 1
+    },
     cancelButton: {
-        width: 30,
-        height: 30,
+        width: 35,
+        height: 35,
         paddingBottom: 30
-    }
+    },
 });
 
 export default Places;

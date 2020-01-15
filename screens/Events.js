@@ -410,7 +410,8 @@ const styles = StyleSheet.create({
         marginRight: 30
     },
     addNewEvent: {
-        flex: 2
+        flex: 2,
+        backgroundColor: "#ffffff"
     }
 });
 

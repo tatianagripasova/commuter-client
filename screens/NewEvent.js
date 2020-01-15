@@ -5,7 +5,6 @@ import { CheckBox } from "react-native-elements";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { Appearance } from 'react-native-appearance';
 import WeekdayPicker from "react-native-weekday-picker"
 import moment from "moment";
 import _ from "lodash";
@@ -41,6 +40,8 @@ const NewEvent = props => {
     const { setEvents, setNewEvent, setRefreshEvents, address, dark } = useContext(ShowScreen);
     const { favouritePlaces } = useContext(GetPlaces);
 
+    const mapRef = useRef();
+
     useEffect(() => {
         setFromLocation(address);
     }, [address]); 
@@ -67,14 +68,16 @@ const NewEvent = props => {
             )
             if(result.status === 200) {
                 const [ origin, destination ] = await result.json();
-                setFromCoordinates(origin);
-                setToCoordinates(destination);
-                mapRef.current.fitToCoordinates([origin, destination], {
-                    edgePadding: {
-                        bottom: 70, right: 70, top: 70, left: 70,
-                    },
-                    animated: true,
-                });
+                if (origin && destination && mapRef && mapRef.current) {
+                    setFromCoordinates(origin);
+                    setToCoordinates(destination);
+                    mapRef.current.fitToCoordinates([origin, destination], {
+                        edgePadding: {
+                            bottom: 70, right: 70, top: 70, left: 70,
+                        },
+                        animated: true,
+                    });
+                }
             } else if (result.status === 401) {
                 showAuth();
             }
@@ -86,8 +89,6 @@ const NewEvent = props => {
         setEvents(true);
         setNewEvent(false);
     };
-
-    const mapRef = useRef();
 
     const showAutocomplete = (field) => {
         setAutocompleteField(field);
@@ -186,6 +187,7 @@ const NewEvent = props => {
                 alwaysNotify,
                 utcOffset: moment().utcOffset()
             };
+            // show wait screen
             const result = await fetch("http://commuter.guru/event", {
                 method: "POST",
                 headers: {
@@ -196,7 +198,8 @@ const NewEvent = props => {
                 body: JSON.stringify({
                     ...results
                 })
-            })
+            });
+            // hide wait screen
             setFromLocation(address);
             setFromCoordinates({});
             setToLocation({});
@@ -324,19 +327,21 @@ const NewEvent = props => {
             </MapView>
             </View>
             <View style={styles.buttons}>
-                <View style={styles.saveButton}>
-                    <Button 
-                        title="Save"
-                        type="clear"
-                        onPress={submitEvent}
-                    />
-                </View>
+                <View style={styles.cancel}>
                     <ImageButton
                         imageStyle={styles.cancelButton}
                         style={styles.cancel}
                         source={require("../images/cancel.png")}
                         onPress={showEventsPage}
                     />
+                </View>
+                <View style={styles.save}>
+                    <Button 
+                        title="Save"
+                        type="clear"
+                        onPress={submitEvent}
+                    />
+                </View>
             </View>
         </ConditionalView>
     )
@@ -349,7 +354,7 @@ const styles = StyleSheet.create({
         width: "100%"
     }, 
     inputsContainer: {
-        flex: 2,
+        flex: 3,
         alignItems: "center",
         width: "80%"
     },
@@ -365,7 +370,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10
     },
     dateWrapper: {
-        flex: 2,
+        flex: 3,
         alignContent: "center", 
         alignItems: "center",
         paddingBottom: 10
@@ -383,17 +388,20 @@ const styles = StyleSheet.create({
         fontSize: 16
     }, 
     buttons: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    cancel: {
         flex: 1
     },
-    saveButton: {
-        flex: 1
+    save: {
+        flex: 1,
+        justifyContent: "center"
     },
     cancelButton: {
         width: 30,
         height: 30
-    },
-    cancel: {
-        paddingBottom: 10
     }
 
 });

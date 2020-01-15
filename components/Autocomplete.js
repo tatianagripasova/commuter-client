@@ -1,14 +1,18 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, ScrollView, TouchableWithoutFeedback } from "react-native";
+import { View, StyleSheet, Text, ScrollView, TouchableWithoutFeedback, Dimensions} from "react-native";
 
 import Input from "./Input";
 import ImageButton from "../components/ImageButton";
 import Modal from "react-native-modal";
+
+const height = Math.round(Dimensions.get('window').height);
+
 const Autocomplete = props => {
     const [textValue, setTextValue] = useState("");
 
     const onValueSelect = (value) => {
         props.onSelect(value);
+        setTextValue("");
     };
 
     const onTextChange = textValue => {
@@ -85,7 +89,9 @@ const Autocomplete = props => {
 const styles = StyleSheet.create({
     modal: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        minHeight: height,
+        height: height
     }, 
     container: {
         flex: 1,
@@ -121,7 +127,8 @@ const styles = StyleSheet.create({
         marginBottom: 30
     },
     buttonContainer: {
-        flex: 1
+        flex: 1,
+        paddingBottom: 30
     },
     cancelButton: {
         width: 40,
