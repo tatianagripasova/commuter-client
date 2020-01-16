@@ -42,6 +42,7 @@ const Menu = props => {
     const logOutHandler = async () => {
         await AsyncStorage.removeItem("userToken");
         await AsyncStorage.removeItem("email");
+        props.setMenuOpen(false);
         showAuth();
     };
 

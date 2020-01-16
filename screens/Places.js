@@ -184,13 +184,13 @@ const Places = props => {
                             rightOpenValue={-75}
                         />
                     </ScrollView>
-                    <View style={styles.cancel}>
-                        <ImageButton
-                            imageStyle={styles.cancelButton}
-                            source={require("../images/cancel.png")}
-                            onPress={showEventsPage}
-                        />
-                    </View>
+                </View>
+                <View style={styles.cancel}>
+                    <ImageButton
+                        imageStyle={styles.cancelButton}
+                        source={require("../images/cancel.png")}
+                        onPress={showEventsPage}
+                    />
                 </View>
        
         </Modal>
@@ -213,9 +213,9 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
     inputsContainer: {
-        flex: 1,
+        flex: 2,
         alignItems: "center",
-        width: "80%"
+        width: "90%"
     },
     inputWrapper: {
         width: "100%"
@@ -233,10 +233,8 @@ const styles = StyleSheet.create({
         paddingTop: 15
     },
     addressList: {
-        flex: 3, 
-        width: "100%", 
-        marginTop: 20,
-        marginBottom: 40
+        flex: 4, 
+        width: "100%"
     }, 
     textContainer: {
         padding: 15
@@ -273,12 +271,12 @@ const styles = StyleSheet.create({
         marginRight: 30
     },
     cancel: {
-        flex: 1
+        flex: 1,
+        marginBottom: 30
     },
     cancelButton: {
         width: 35,
-        height: 35,
-        paddingBottom: 30
+        height: 35
     },
 });
 

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "948073798573",
+    "firebase_url": "https://commuter-93c40.firebaseio.com",
+    "project_id": "commuter-93c40",
+    "storage_bucket": "commuter-93c40.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948073798573:android:4cdae8246fe33ba69e1f24",
+        "android_client_info": {
+          "package_name": "guru.commuter.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "948073798573-8r1mhespaaqnt3p9led89jju6u00l70o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNRyCb3W_EIBn2Jr8aJTPnTwNNMwS9Pao"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "948073798573-8r1mhespaaqnt3p9led89jju6u00l70o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

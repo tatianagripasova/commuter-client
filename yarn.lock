@@ -4307,10 +4307,10 @@ react-native-elements@^1.2.7:
     react-native-ratings "^6.3.0"
     react-native-status-bar-height "^2.2.0"
 
-react-native-expo-auth@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/react-native-expo-auth/-/react-native-expo-auth-0.0.8.tgz#216828647529881b0f783bbe38de55ae1e50e288"
-  integrity sha512-YBOrkg1pckBbXj7dBzOA9TMZYg6qJ/tlJsg5irur2NU099Qfnpii8+8bunNN3WOwMkqHMVHq2VUfIOCIO5lhrA==
+react-native-expo-auth@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/react-native-expo-auth/-/react-native-expo-auth-0.0.9.tgz#42df06053c777dd5d7f6ab59fee3409d0a0e7419"
+  integrity sha512-OyK6X1H4v/j/fNFltc47NxMyvDhvVw+s3RNerohQHc+tLOJYnfh8WXVq4medcZvHScRNn4PRWANd0q2TfVFF0A==
   dependencies:
     expo-constants "~7.0.0"
     expo-local-authentication "^7.0.0"

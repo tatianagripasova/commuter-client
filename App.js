@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, AsyncStorage, Text } from 'react-native';
+import { StyleSheet, View, AsyncStorage, Text, Image } from 'react-native';
 
 import NewEvent from "./screens/NewEvent";
 import Places from "./screens/Places";
@@ -106,6 +106,7 @@ export default function App() {
 };
 
   const submitAuth = async(data, route) => {
+    console.log('>>>>', data, route)
     const signUpRaw = await fetch(`http://commuter.guru/${route}`, {
       method: "POST", 
       headers: {
@@ -162,7 +163,10 @@ export default function App() {
           onSubmitNewPassword={submitNewPassword}
           enableBio={true}
         >
-          <Text>LOGO</Text>
+          <Image
+            style={styles.logo}
+            source={require("./images/logo.png")}
+          />
         </Authenticate>
         <AuthContext.Provider value={{token, email, showAuth}}>
           <ShowScreen.Provider value={{setNewEvent, setEvents, setPlaces, refreshEvents, setRefreshEvents, address, dark}}>
@@ -193,5 +197,9 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     fontFamily: "System",
     fontSize: 16
+  },
+  logo: {
+    width: 150,
+    height: 150
   }
 });

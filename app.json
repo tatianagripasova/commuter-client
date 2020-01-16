@@ -14,7 +14,7 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "description": "The Commuter.guru app helps users to monitor traffic situation by getting push notifications.",
@@ -37,6 +37,7 @@
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "package": "guru.commuter.app",
       "config": {
           "googleMaps": {
